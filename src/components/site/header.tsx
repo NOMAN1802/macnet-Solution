@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Wordmark } from "@/components/ui/wordmark";
 
 const NAV = [
@@ -14,8 +14,9 @@ const NAV = [
 
 export function Header() {
   const pathname = usePathname();
-  const [open, setOpen] = useState(false);
-  useEffect(() => setOpen(false), [pathname]);
+  // Menu stays open only for the path it was opened on, so navigating closes it.
+  const [openOn, setOpenOn] = useState<string | null>(null);
+  const open = openOn === pathname;
 
   return (
     <header className="sticky top-0 z-30 border-b border-rail-line bg-paper/95 backdrop-blur-[2px]">
@@ -45,7 +46,7 @@ export function Header() {
             className="inline-flex h-11 w-11 items-center justify-center border border-rail-line md:hidden"
             aria-expanded={open}
             aria-controls="mobile-nav"
-            onClick={() => setOpen((v) => !v)}
+            onClick={() => setOpenOn(open ? null : pathname)}
           >
             <span className="sr-only">{open ? "Close menu" : "Open menu"}</span>
             <span aria-hidden className="flex w-5 flex-col gap-[5px]">

@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState, useTransition } from "react";
+import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { motion, useReducedMotion } from "motion/react";
 import { submitLead } from "@/app/actions/leads";
@@ -114,7 +115,7 @@ export function LeadForm({
           ) : (
             <p className="mt-2 text-sm text-text-muted">
               No product selected. Describe what you need below, or add items from the{" "}
-              <a href="/products" className="text-signal-ink underline underline-offset-4">product list</a>.
+              <Link href="/products" className="text-signal-ink underline underline-offset-4">product list</Link>.
             </p>
           )}
         </fieldset>
