@@ -104,12 +104,15 @@ export async function getProduct(slug: string) {
   return { product, related };
 }
 
-export async function getProductsByIds(ids: string[]) {
+export async function getProductsBySlugs(slugs: string[]) {
   "use cache";
   cacheLife("hours");
   cacheTag(CATALOG_TAG);
-  if (ids.length === 0) return [];
-  return db.product.findMany({ where: { id: { in: ids } }, select: { id: true, name: true, sku: true, slug: true } });
+  if (slugs.length === 0) return [];
+  return db.product.findMany({
+    where: { slug: { in: slugs }, status: "PUBLISHED" },
+    select: { id: true, name: true, sku: true },
+  });
 }
 
 export async function getServices() {
