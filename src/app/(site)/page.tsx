@@ -51,11 +51,11 @@ export default async function HomePage() {
                 Request a quote
               </Link>
             </div>
-            <dl className="mt-12 grid max-w-lg grid-cols-3 border-t border-rail-line-dark pt-5">
+            <dl className="mt-12 grid max-w-lg grid-cols-3 gap-4 border-t border-rail-line-dark pt-5">
               {[
                 [String(brands.length), "brands"],
-                [`${productCount}`, "products listed"],
-                ["2", "offices in Dhaka"],
+                [`${productCount}`, "products"],
+                ["2", "Dhaka offices"],
               ].map(([v, l]) => (
                 <div key={l}>
                   <dt className="port uppercase text-rail">{l}</dt>
@@ -187,12 +187,12 @@ export default async function HomePage() {
                   {p.sector} · {p.year}
                 </p>
                 <h3 className="heading mt-3 text-2xl">{p.title}</h3>
-                <p className="mt-3 text-sm text-rail">{p.summary}</p>
-                <dl className="mt-auto grid grid-cols-3 gap-3 border-t border-rail-line-dark pt-5 [margin-top:max(2rem,auto)]">
+                <p className="mt-3 flex-1 text-sm text-rail">{p.summary}</p>
+                <dl className="mt-8 grid grid-cols-3 gap-3 border-t border-rail-line-dark pt-5">
                   {p.results.map((r) => (
                     <div key={r.label}>
                       <dd className="display text-2xl">{r.value}</dd>
-                      <dt className="port mt-1 text-[0.6875rem] uppercase text-rail">{r.label}</dt>
+                      <dt className="port mt-1 min-h-[2.6em] text-[0.6875rem] uppercase text-rail">{r.label}</dt>
                     </div>
                   ))}
                 </dl>

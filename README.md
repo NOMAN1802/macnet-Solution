@@ -1,36 +1,38 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Macnet Solutions website
 
-## Getting Started
+Next.js 16 (App Router, Cache Components) · TypeScript · Tailwind CSS 4 · Prisma 6 on MongoDB · Auth.js (credentials) · motion · react-three-fiber.
 
-First, run the development server:
+All catalogue, project, testimonial, team and post content is **mock data** (`isMock: true`) until the CMS is filled with real content.
+
+## Run locally
+
+Requirements: Node 20+, pnpm, Docker Desktop.
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cp .env.example .env        # then set AUTH_SECRET, SEED_ADMIN_EMAIL, SEED_ADMIN_PASSWORD
+pnpm install
+pnpm db:up                  # MongoDB single-node replica set on localhost:27018
+pnpm db:push                # create collections and indexes
+pnpm db:seed                # mock products, projects, offices + admin user
+pnpm dev                    # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Admin: http://localhost:3000/admin (sign in with SEED_ADMIN_EMAIL / SEED_ADMIN_PASSWORD).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Script | What it does |
+|---|---|
+| `pnpm dev` / `pnpm build` / `pnpm start` | Next.js dev, production build, production server |
+| `pnpm lint` / `pnpm typecheck` | ESLint, route typegen + `tsc --noEmit` |
+| `pnpm db:up` | Start local MongoDB (Docker) |
+| `pnpm db:push` / `pnpm db:seed` / `pnpm db:studio` | Schema push, mock seed, Prisma Studio |
+| `pnpm placeholders` | Regenerate the SVG placeholder images |
 
-## Learn More
+## Notes
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Prisma 6, not 7**: Prisma 7 does not support MongoDB yet.
+- **Deploying to Vercel**: set `DATABASE_URL` to a MongoDB Atlas URL (the build reads the catalogue to pre-render product pages), plus `AUTH_SECRET`, `NEXT_PUBLIC_SITE_URL`, `LEAD_ALERT_EMAIL`.
+- **Lead email alerts** are not wired yet (no mail provider chosen). Leads are saved and shown in /admin.
+- **Logo**: a text wordmark is used until the logo is placed in `public/brand/`.
+- Catalogue pages are cached with the `catalog` / `content` cache tags; admin edits should call `revalidateTag` on these.
