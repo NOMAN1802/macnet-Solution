@@ -1,26 +1,154 @@
 @import "tailwindcss";
 
+/* Rack and Signal design tokens */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --ink: #23235b;          /* ink indigo: headings, wordmark, primary surfaces */
+  --ink-soft: #3a3a78;
+  --rack: #0e0f14;         /* rack black: dark sections, footer */
+  --rack-2: #171922;
+  --paper: #f4f3ee;        /* datasheet paper: page background */
+  --paper-2: #eae8df;
+  --white: #ffffff;
+  --signal: #19b6d8;       /* signal cyan: the single accent */
+  --signal-ink: #0b7e98;   /* accessible cyan for text on paper */
+  --led-green: #3ddc84;    /* stock: in stock only */
+  --led-amber: #f5a524;    /* stock: on order only */
+  --rail: #8a8d99;         /* rail grey: rules, secondary text */
+  --rail-line: #d6d4cb;    /* thin rails on paper */
+  --rail-line-dark: #2a2c36;
+  --text: #1b1c24;
+  --text-muted: #5c5f6b;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-rack: var(--rack);
+  --color-rack-2: var(--rack-2);
+  --color-paper: var(--paper);
+  --color-paper-2: var(--paper-2);
+  --color-signal: var(--signal);
+  --color-signal-ink: var(--signal-ink);
+  --color-led-green: var(--led-green);
+  --color-led-amber: var(--led-amber);
+  --color-rail: var(--rail);
+  --color-rail-line: var(--rail-line);
+  --color-rail-line-dark: var(--rail-line-dark);
+  --color-text: var(--text);
+  --color-text-muted: var(--text-muted);
+  --font-sans: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+html {
+  scroll-behavior: smooth;
+}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
   }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--paper);
+  color: var(--text);
+  font-family: var(--font-sans);
+}
+
+::selection {
+  background: var(--signal);
+  color: var(--rack);
+}
+
+:focus-visible {
+  outline: 2px solid var(--signal);
+  outline-offset: 2px;
+}
+
+@layer components {
+  /* 12-column rack container with thin vertical rails at the edges */
+  .rack {
+    width: 100%;
+    max-width: 1280px;
+    margin-inline: auto;
+    padding-inline: 1rem;
+  }
+  @media (min-width: 768px) {
+    .rack {
+      padding-inline: 2rem;
+    }
+  }
+  .rails {
+    border-inline: 1px solid var(--rail-line);
+  }
+  .rails-dark {
+    border-inline: 1px solid var(--rail-line-dark);
+  }
+  /* condensed display headings using Archivo's width axis */
+  .display {
+    font-variation-settings: "wdth" 72;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 0.95;
+  }
+  .heading {
+    font-variation-settings: "wdth" 85;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    line-height: 1.05;
+  }
+  .port {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    height: 2.75rem;
+    padding-inline: 1.25rem;
+    font-weight: 600;
+    font-size: 0.9375rem;
+    border: 1px solid transparent;
+    transition: background-color 150ms, color 150ms, border-color 150ms;
+    white-space: nowrap;
+  }
+  .btn-primary {
+    background: var(--ink);
+    color: var(--white);
+  }
+  .btn-primary:hover {
+    background: var(--rack);
+  }
+  .btn-signal {
+    background: var(--signal);
+    color: var(--rack);
+  }
+  .btn-signal:hover {
+    background: #46c7e3;
+  }
+  .btn-ghost {
+    border-color: currentColor;
+  }
+  .btn-ghost:hover {
+    background: color-mix(in oklab, currentColor 8%, transparent);
+  }
+  .field {
+    width: 100%;
+    height: 2.75rem;
+    padding-inline: 0.75rem;
+    background: var(--white);
+    border: 1px solid var(--rail-line);
+    font-size: 0.9375rem;
+  }
+  .field:focus {
+    border-color: var(--ink);
+    outline: none;
+    box-shadow: 0 0 0 1px var(--ink);
+  }
+  textarea.field {
+    height: auto;
+    padding-block: 0.625rem;
+  }
 }

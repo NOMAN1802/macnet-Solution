@@ -1,0 +1,291 @@
+// Macnet Solutions data model (MongoDB). Prisma 6 is used because Prisma 7 has no MongoDB support.
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  EDITOR
+  SALES
+}
+
+enum StockStatus {
+  IN_STOCK
+  ON_ORDER
+  DISCONTINUED
+}
+
+enum PublishStatus {
+  DRAFT
+  PUBLISHED
+  SCHEDULED
+  ARCHIVED
+}
+
+enum LeadType {
+  QUOTE
+  CONTACT
+}
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+  QUOTED
+  WON
+  LOST
+}
+
+type SpecRow {
+  group String
+  label String
+  value String
+}
+
+type ImageRef {
+  url    String
+  alt    String
+  width  Int
+  height Int
+}
+
+type Seo {
+  title       String?
+  description String?
+  ogImage     String?
+}
+
+type ResultStat {
+  value String
+  label String
+}
+
+model User {
+  id           String     @id @default(auto()) @map("_id") @db.ObjectId
+  email        String     @unique
+  name         String?
+  passwordHash String
+  role         Role       @default(ADMIN)
+  active       Boolean    @default(true)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  activities   Activity[]
+  leads        Lead[]     @relation("LeadAssignee")
+}
+
+model Category {
+  id           String     @id @default(auto()) @map("_id") @db.ObjectId
+  name         String
+  slug         String     @unique
+  description  String?
+  order        Int        @default(0)
+  specTemplate String[]
+  parentId     String?    @db.ObjectId
+  parent       Category?  @relation("CategoryTree", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  children     Category[] @relation("CategoryTree")
+  products     Product[]
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
+
+model Brand {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  slug        String    @unique
+  description String?
+  logo        String?
+  website     String?
+  order       Int       @default(0)
+  products    Product[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Product {
+  id          String        @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  slug        String        @unique
+  sku         String        @unique
+  pitch       String
+  body        Json?
+  specs       SpecRow[]
+  images      ImageRef[]
+  datasheet   String?
+  stock       StockStatus   @default(IN_STOCK)
+  featured    Boolean       @default(false)
+  status      PublishStatus @default(DRAFT)
+  publishAt   DateTime?
+  isMock      Boolean       @default(false)
+  categoryId  String        @db.ObjectId
+  category    Category      @relation(fields: [categoryId], references: [id])
+  brandId     String        @db.ObjectId
+  brand       Brand         @relation(fields: [brandId], references: [id])
+  projectIds  String[]      @db.ObjectId
+  projects    Project[]     @relation(fields: [projectIds], references: [id])
+  seo         Seo?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@index([categoryId])
+  @@index([brandId])
+  @@index([status])
+}
+
+model Project {
+  id         String        @id @default(auto()) @map("_id") @db.ObjectId
+  title      String
+  slug       String        @unique
+  client     String
+  sector     String
+  location   String
+  year       Int
+  summary    String?
+  challenge  Json?
+  solution   Json?
+  results    ResultStat[]
+  cover      ImageRef?
+  gallery    ImageRef[]
+  productIds String[]      @db.ObjectId
+  products   Product[]     @relation(fields: [productIds], references: [id])
+  status     PublishStatus @default(PUBLISHED)
+  isMock     Boolean       @default(false)
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+}
+
+model Service {
+  id        String        @id @default(auto()) @map("_id") @db.ObjectId
+  title     String
+  slug      String        @unique
+  summary   String
+  body      Json?
+  points    String[]
+  order     Int           @default(0)
+  status    PublishStatus @default(PUBLISHED)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+}
+
+model Post {
+  id          String        @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  slug        String        @unique
+  excerpt     String
+  body        Json?
+  cover       ImageRef?
+  tags        String[]
+  author      String?
+  status      PublishStatus @default(DRAFT)
+  publishedAt DateTime?
+  seo         Seo?
+  isMock      Boolean       @default(false)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
+model Testimonial {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  quote     String
+  name      String
+  role      String?
+  company   String?
+  order     Int      @default(0)
+  visible   Boolean  @default(true)
+  isMock    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model TeamMember {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  role      String
+  bio       String?
+  photo     ImageRef?
+  order     Int       @default(0)
+  visible   Boolean   @default(true)
+  isMock    Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model PageSection {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  page      String
+  kind      String
+  order     Int      @default(0)
+  data      Json
+  visible   Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([page, order])
+}
+
+model Office {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  label     String
+  address   String
+  phones    String[]
+  email     String?
+  mapUrl    String?
+  hours     String?
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SiteSettings {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  key       String   @unique @default("site")
+  data      Json
+  updatedAt DateTime @updatedAt
+}
+
+model Lead {
+  id         String     @id @default(auto()) @map("_id") @db.ObjectId
+  type       LeadType
+  name       String
+  company    String?
+  email      String
+  phone      String?
+  message    String?
+  productIds String[]   @db.ObjectId
+  source     String?
+  status     LeadStatus @default(NEW)
+  notes      String?
+  assigneeId String?    @db.ObjectId
+  assignee   User?      @relation("LeadAssignee", fields: [assigneeId], references: [id])
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+
+  @@index([status, createdAt])
+}
+
+model Media {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  url       String
+  alt       String?
+  width     Int?
+  height    Int?
+  mime      String?
+  size      Int?
+  createdAt DateTime @default(now())
+}
+
+model Activity {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  action    String
+  entity    String
+  entityId  String?
+  summary   String?
+  userId    String?  @db.ObjectId
+  user      User?    @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}
