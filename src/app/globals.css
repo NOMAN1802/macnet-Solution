@@ -1,47 +1,67 @@
 @import "tailwindcss";
 
-/* Rack and Signal design tokens */
+/* Macnet site tokens from the logo: teal accent (token still named --red), logo-purple headings and dark panels */
 :root {
-  --ink: #23235b;          /* ink indigo: headings, wordmark, primary surfaces */
-  --ink-soft: #3a3a78;
-  --rack: #0e0f14;         /* rack black: dark sections, footer */
-  --rack-2: #171922;
-  --paper: #f4f3ee;        /* datasheet paper: page background */
-  --paper-2: #eae8df;
+  --red: #148a93;
+  --red-dark: #0e6f77;
+  --red-soft: #e8f6f7;
+  --heading: #3c3562;
+  --body: #6e727d;
+  --line: #e9eaee;
+  --mist: #f6f7f9;
+  --navy: #26213f;
+  --navy-2: #322c52;
   --white: #ffffff;
-  --signal: #19b6d8;       /* signal cyan: the single accent */
-  --signal-ink: #0b7e98;   /* accessible cyan for text on paper */
-  --led-green: #3ddc84;    /* stock: in stock only */
-  --led-amber: #f5a524;    /* stock: on order only */
-  --rail: #8a8d99;         /* rail grey: rules, secondary text */
-  --rail-line: #d6d4cb;    /* thin rails on paper */
-  --rail-line-dark: #2a2c36;
-  --text: #1b1c24;
-  --text-muted: #5c5f6b;
+  --led-green: #2fbf71;
+  --led-amber: #f5a524;
+
+  /* legacy tokens still used by the admin screens */
+  --ink: #3c3562;
+  --rack: #26213f;
+  --paper: #f6f7f9;
+  --paper-2: #eceef2;
+  --signal: #148a93;
+  --signal-ink: #0e6f77;
+  --rail: #8a8d99;
+  --rail-line: #e2e4e9;
+  --rail-line-dark: #3d3760;
+  --text: #3c3562;
+  --text-muted: #6e727d;
 }
 
 @theme inline {
+  --color-red: var(--red);
+  --color-red-dark: var(--red-dark);
+  --color-red-soft: var(--red-soft);
+  --color-heading: var(--heading);
+  --color-body: var(--body);
+  --color-line: var(--line);
+  --color-mist: var(--mist);
+  --color-navy: var(--navy);
+  --color-navy-2: var(--navy-2);
+  --color-led-green: var(--led-green);
+  --color-led-amber: var(--led-amber);
+
   --color-ink: var(--ink);
-  --color-ink-soft: var(--ink-soft);
   --color-rack: var(--rack);
-  --color-rack-2: var(--rack-2);
   --color-paper: var(--paper);
   --color-paper-2: var(--paper-2);
   --color-signal: var(--signal);
   --color-signal-ink: var(--signal-ink);
-  --color-led-green: var(--led-green);
-  --color-led-amber: var(--led-amber);
   --color-rail: var(--rail);
   --color-rail-line: var(--rail-line);
   --color-rail-line-dark: var(--rail-line-dark);
   --color-text: var(--text);
   --color-text-muted: var(--text-muted);
-  --font-sans: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-jetbrains), ui-monospace, monospace;
+
+  --font-sans: var(--font-roboto), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
 html {
   scroll-behavior: smooth;
+  overflow-x: clip;
 }
 @media (prefers-reduced-motion: reduce) {
   html {
@@ -49,24 +69,46 @@ html {
   }
 }
 
-body {
-  background: var(--paper);
-  color: var(--text);
-  font-family: var(--font-sans);
+/* Base rules live in the base layer so Tailwind utilities (e.g. text-white on a heading) win. */
+@layer base {
+  body {
+    background: var(--white);
+    color: var(--body);
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.7;
+    /* slide-in-from-side entrances start off-canvas; never let them create sideways scroll */
+    overflow-x: clip;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    color: var(--heading);
+    line-height: 1.2;
+  }
 }
 
 ::selection {
-  background: var(--signal);
-  color: var(--rack);
+  background: var(--red);
+  color: var(--white);
 }
 
 :focus-visible {
-  outline: 2px solid var(--signal);
+  outline: 2px solid var(--red);
   outline-offset: 2px;
 }
 
 @layer components {
-  /* 12-column rack container with thin vertical rails at the edges */
+  .container-x {
+    width: 100%;
+    max-width: 1202px;
+    margin-inline: auto;
+    padding-inline: 16px;
+  }
+  /* legacy container used by admin */
   .rack {
     width: 100%;
     max-width: 1280px;
@@ -78,77 +120,212 @@ body {
       padding-inline: 2rem;
     }
   }
-  .rails {
-    border-inline: 1px solid var(--rail-line);
-  }
-  .rails-dark {
-    border-inline: 1px solid var(--rail-line-dark);
-  }
-  /* condensed display headings using Archivo's width axis */
-  .display {
-    font-variation-settings: "wdth" 72;
-    font-weight: 800;
-    letter-spacing: -0.02em;
-    line-height: 0.95;
-  }
   .heading {
-    font-variation-settings: "wdth" 85;
+    font-family: var(--font-display);
     font-weight: 700;
     letter-spacing: -0.01em;
-    line-height: 1.05;
+    line-height: 1.15;
   }
   .port {
-    font-family: var(--font-mono);
     font-size: 0.75rem;
     letter-spacing: 0.04em;
   }
+
+  /* small red section label above headings */
+  .eyebrow {
+    font-family: var(--font-display);
+    font-size: 0.875rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--red);
+  }
+  .section-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(1.875rem, 1.3rem + 2vw, 2.625rem);
+    line-height: 1.2;
+    color: var(--heading);
+    letter-spacing: -0.01em;
+  }
+
   .btn {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 0.5rem;
-    height: 2.75rem;
-    padding-inline: 1.25rem;
+    min-height: 3rem;
+    padding: 0.75rem 1.75rem;
+    font-family: var(--font-display);
     font-weight: 600;
-    font-size: 0.9375rem;
+    font-size: 0.8125rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
     border: 1px solid transparent;
-    transition: background-color 150ms, color 150ms, border-color 150ms;
+    transition: background-color 300ms, color 300ms, border-color 300ms;
     white-space: nowrap;
   }
-  .btn-primary {
-    background: var(--ink);
+  .btn-primary,
+  .btn-red {
+    background: var(--red);
     color: var(--white);
   }
-  .btn-primary:hover {
-    background: var(--rack);
+  .btn-primary:hover,
+  .btn-red:hover {
+    background: var(--heading);
   }
-  .btn-signal {
-    background: var(--signal);
-    color: var(--rack);
+  .btn-white {
+    background: var(--white);
+    color: var(--red);
   }
-  .btn-signal:hover {
-    background: #46c7e3;
+  .btn-white:hover {
+    background: var(--heading);
+    color: var(--white);
   }
   .btn-ghost {
     border-color: currentColor;
   }
   .btn-ghost:hover {
-    background: color-mix(in oklab, currentColor 8%, transparent);
+    background: var(--red);
+    border-color: var(--red);
+    color: var(--white);
   }
+
+  /* "Read more" style text link with a nudging arrow */
+  .link-more {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: var(--font-display);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--red);
+  }
+  .link-more svg {
+    transition: transform 300ms;
+  }
+  .link-more:hover svg,
+  .group:hover .link-more svg {
+    transform: translateX(4px);
+  }
+
+  .card-shadow {
+    box-shadow: 0 5px 30px rgb(35 38 49 / 0.09);
+  }
+
+  /* Card whose red fill rises from the bottom on hover (reference service-card hover) */
+  .fill-card {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background: var(--white);
+    transition: transform 400ms ease, box-shadow 400ms ease;
+  }
+  .fill-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--red);
+    transform: scaleY(0);
+    transform-origin: bottom;
+    transition: transform 450ms cubic-bezier(0.6, 0.1, 0.2, 1);
+  }
+  .fill-card:hover::before,
+  .fill-card:focus-within::before {
+    transform: scaleY(1);
+  }
+  .fill-card:hover,
+  .fill-card:focus-within {
+    transform: translateY(-6px);
+  }
+  .fill-card .fc-title,
+  .fill-card .fc-text,
+  .fill-card .fc-icon,
+  .fill-card .link-more {
+    transition: color 350ms ease;
+  }
+  .fill-card:hover :is(.fc-title, .fc-text, .fc-icon, .link-more),
+  .fill-card:focus-within :is(.fc-title, .fc-text, .fc-icon, .link-more) {
+    color: var(--white);
+  }
+
   .field {
     width: 100%;
-    height: 2.75rem;
-    padding-inline: 0.75rem;
+    height: 3.25rem;
+    padding-inline: 1.1rem;
     background: var(--white);
-    border: 1px solid var(--rail-line);
+    border: 1px solid var(--line);
+    color: var(--heading);
     font-size: 0.9375rem;
+    transition: border-color 200ms, box-shadow 200ms;
+  }
+  .field::placeholder {
+    color: #a3a6ae;
   }
   .field:focus {
-    border-color: var(--ink);
+    border-color: var(--red);
     outline: none;
-    box-shadow: 0 0 0 1px var(--ink);
+    box-shadow: 0 0 0 3px rgb(253 56 74 / 0.12);
   }
   textarea.field {
     height: auto;
-    padding-block: 0.625rem;
+    padding-block: 0.875rem;
+  }
+
+  .dot-pattern {
+    background-image: radial-gradient(rgb(255 255 255 / 0.13) 1.5px, transparent 1.5px);
+    background-size: 22px 22px;
+  }
+}
+
+/* ---------- Motion (reference: hero slider with slow zoom, pulsing play button) ---------- */
+@keyframes kenburns {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.14);
+  }
+}
+.kenburns {
+  animation: kenburns 9s linear forwards;
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(1.9);
+    opacity: 0;
+  }
+}
+.pulse-ring::before,
+.pulse-ring::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: rgb(255 255 255 / 0.45);
+  animation: pulse-ring 2s ease-out infinite;
+  z-index: -1;
+}
+.pulse-ring::after {
+  animation-delay: 1s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kenburns,
+  .pulse-ring::before,
+  .pulse-ring::after {
+    animation: none;
+  }
+  .fill-card,
+  .fill-card::before {
+    transition: none;
   }
 }

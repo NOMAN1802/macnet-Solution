@@ -17,11 +17,14 @@ export function LeadForm({
   products = [],
   whatsapp,
   source,
+  variant = "card",
 }: {
   type: "QUOTE" | "CONTACT";
   products?: Picked[];
   whatsapp: string;
   source?: string;
+  /** "card" draws its own shadowed panel; "plain" sits inside a panel the page provides. */
+  variant?: "card" | "plain";
 }) {
   const [picked, setPicked] = useState<Picked[]>(products);
   const [done, setDone] = useState(false);
@@ -59,31 +62,31 @@ export function LeadForm({
       <motion.div
         initial={reduce ? false : { opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
-        className="border border-ink bg-white p-8"
+        className="card-shadow border-t-4 border-red bg-white p-8 md:p-10"
         role="status"
       >
-        <p className="port flex items-center gap-2 uppercase text-text-muted">
+        <p className="eyebrow flex items-center gap-2">
           <span className="h-2 w-2 rounded-full bg-led-green" /> Received
         </p>
-        <h2 className="heading mt-4 text-3xl text-ink">Thanks. We&apos;ve got your {type === "QUOTE" ? "request" : "message"}.</h2>
-        <p className="mt-3 text-text-muted">Our sales team usually replies within one working day. For anything urgent, message us on WhatsApp.</p>
-        <a href={whatsappLink(whatsapp)} target="_blank" rel="noopener noreferrer" className="btn btn-primary mt-6">
+        <h2 className="mt-4 text-2xl font-bold md:text-3xl">Thanks. We&apos;ve got your {type === "QUOTE" ? "request" : "message"}.</h2>
+        <p className="mt-3">Our sales team usually replies within one working day. For anything urgent, message us on WhatsApp.</p>
+        <a href={whatsappLink(whatsapp)} target="_blank" rel="noopener noreferrer" className="btn btn-red mt-6">
           <WhatsAppIcon className="h-4 w-4" /> WhatsApp {whatsapp}
         </a>
       </motion.div>
     );
   }
 
-  const field = (name: keyof LeadInput) => (errors[name] ? "border-red-600" : "");
+  const field = (name: keyof LeadInput) => (errors[name] ? "!border-red" : "");
   const err = (name: keyof LeadInput) =>
     errors[name] ? (
-      <p id={`${name}-error`} className="mt-1 text-sm text-red-700">
+      <p id={`${name}-error`} className="mt-1.5 text-sm text-red-dark">
         {String(errors[name]?.message)}
       </p>
     ) : null;
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} noValidate className="border border-rail-line bg-white p-6 md:p-8">
+    <form onSubmit={handleSubmit(onSubmit)} noValidate className={variant === "card" ? "card-shadow bg-white p-6 sm:p-8 md:p-10" : ""}>
       <input type="hidden" {...register("type")} />
       <div aria-hidden className="absolute left-[-9999px] h-0 w-0 overflow-hidden">
         <label>
@@ -93,18 +96,18 @@ export function LeadForm({
 
       {type === "QUOTE" ? (
         <fieldset className="mb-6">
-          <legend className="port uppercase text-text-muted">Products in this request</legend>
+          <legend className="font-display text-[0.9375rem] font-semibold text-heading">Products in this request</legend>
           {picked.length ? (
-            <ul className="mt-3 divide-y divide-rail-line border border-rail-line">
+            <ul className="mt-3 divide-y divide-line border border-line bg-mist">
               {picked.map((p) => (
                 <li key={p.id} className="flex items-center justify-between gap-4 px-4 py-3">
                   <span>
-                    <span className="font-medium text-ink">{p.name}</span>
-                    <span className="port ml-2 text-text-muted">{p.sku}</span>
+                    <span className="font-medium text-heading">{p.name}</span>
+                    <span className="ml-2 text-xs">{p.sku}</span>
                   </span>
                   <button
                     type="button"
-                    className="port uppercase text-text-muted underline-offset-4 hover:text-ink hover:underline"
+                    className="link-more shrink-0 hover:underline"
                     onClick={() => setPicked((list) => list.filter((x) => x.id !== p.id))}
                   >
                     Remove
@@ -113,43 +116,43 @@ export function LeadForm({
               ))}
             </ul>
           ) : (
-            <p className="mt-2 text-sm text-text-muted">
+            <p className="mt-2 text-sm">
               No product selected. Describe what you need below, or add items from the{" "}
-              <Link href="/products" className="text-signal-ink underline underline-offset-4">product list</Link>.
+              <Link href="/products" className="text-red underline underline-offset-4">product list</Link>.
             </p>
           )}
         </fieldset>
       ) : null}
 
-      <div className="grid gap-5 sm:grid-cols-2">
+      <div className="grid gap-x-6 gap-y-5 sm:grid-cols-2">
         <div>
-          <label htmlFor="name" className="text-sm font-medium">Name *</label>
-          <input id="name" autoComplete="name" className={`field mt-1.5 ${field("name")}`} aria-invalid={!!errors.name} aria-describedby={errors.name ? "name-error" : undefined} {...register("name")} />
+          <label htmlFor="name" className="font-display text-[0.9375rem] font-semibold text-heading">Name *</label>
+          <input id="name" autoComplete="name" placeholder="Your name" className={`field mt-1.5 ${field("name")}`} aria-invalid={!!errors.name} aria-describedby={errors.name ? "name-error" : undefined} {...register("name")} />
           {err("name")}
         </div>
         <div>
-          <label htmlFor="company" className="text-sm font-medium">Company</label>
-          <input id="company" autoComplete="organization" className="field mt-1.5" {...register("company")} />
+          <label htmlFor="company" className="font-display text-[0.9375rem] font-semibold text-heading">Company</label>
+          <input id="company" autoComplete="organization" placeholder="Company name" className="field mt-2" {...register("company")} />
         </div>
         <div>
-          <label htmlFor="email" className="text-sm font-medium">Email *</label>
-          <input id="email" type="email" autoComplete="email" className={`field mt-1.5 ${field("email")}`} aria-invalid={!!errors.email} aria-describedby={errors.email ? "email-error" : undefined} {...register("email")} />
+          <label htmlFor="email" className="font-display text-[0.9375rem] font-semibold text-heading">Email *</label>
+          <input id="email" type="email" autoComplete="email" placeholder="you@company.com" className={`field mt-1.5 ${field("email")}`} aria-invalid={!!errors.email} aria-describedby={errors.email ? "email-error" : undefined} {...register("email")} />
           {err("email")}
         </div>
         <div>
-          <label htmlFor="phone" className="text-sm font-medium">Phone / WhatsApp</label>
-          <input id="phone" type="tel" autoComplete="tel" className={`field mt-1.5 ${field("phone")}`} aria-invalid={!!errors.phone} {...register("phone")} />
+          <label htmlFor="phone" className="font-display text-[0.9375rem] font-semibold text-heading">Phone / WhatsApp</label>
+          <input id="phone" type="tel" autoComplete="tel" placeholder="+880" className={`field mt-1.5 ${field("phone")}`} aria-invalid={!!errors.phone} {...register("phone")} />
           {err("phone")}
         </div>
         <div className="sm:col-span-2">
-          <label htmlFor="message" className="text-sm font-medium">
+          <label htmlFor="message" className="font-display text-[0.9375rem] font-semibold text-heading">
             {type === "QUOTE" ? "Quantities, models or what you need" : "Message"}
           </label>
           <textarea
             id="message"
             rows={5}
             className={`field mt-1.5 ${field("message")}`}
-            placeholder={type === "QUOTE" ? "e.g. 4 × 24-port PoE switches, 12 Wi-Fi 6 APs, delivery to Gulshan" : ""}
+            placeholder={type === "QUOTE" ? "e.g. 4 × 24-port PoE switches, 12 Wi-Fi 6 APs, delivery to Gulshan" : "How can we help?"}
             aria-invalid={!!errors.message}
             {...register("message")}
           />
@@ -158,16 +161,16 @@ export function LeadForm({
       </div>
 
       {serverError ? (
-        <p role="alert" className="mt-5 border-l-2 border-red-600 pl-3 text-sm text-red-700">
+        <p role="alert" className="mt-5 border-l-4 border-red bg-red-soft px-4 py-3 text-sm text-red-dark">
           {serverError}
         </p>
       ) : null}
 
-      <div className="mt-6 flex flex-wrap items-center gap-4">
-        <button type="submit" className="btn btn-primary disabled:opacity-60" disabled={pending}>
+      <div className="mt-7 flex flex-wrap items-center gap-4">
+        <button type="submit" className="btn btn-red disabled:opacity-60" disabled={pending}>
           {pending ? "Sending…" : type === "QUOTE" ? "Send quote request" : "Send message"} {!pending ? <ArrowRight /> : null}
         </button>
-        <p className="text-sm text-text-muted">No prices online. We reply with a written quote.</p>
+        <p className="text-sm">No prices online. We reply with a written quote.</p>
       </div>
     </form>
   );

@@ -1,11 +1,35 @@
+import Image from "next/image";
 import Link from "next/link";
-import { getBrands, getCategories, getFeaturedProducts, getProjects, getServices, getSiteSettings, getTestimonials } from "@/lib/data";
-import { whatsappLink } from "@/lib/site";
-import { HeroVisual } from "@/components/three/hero-visual";
+import {
+  getBrands,
+  getCategories,
+  getFeaturedProducts,
+  getProjects,
+  getServices,
+  getSiteSettings,
+  getTestimonials,
+} from "@/lib/data";
+import { CLIENTS, whatsappLink } from "@/lib/site";
+import { HeroSlider } from "@/components/site/hero-slider";
+import { TestimonialSlider } from "@/components/site/testimonial-slider";
+import { LeadForm } from "@/components/site/lead-form";
 import { ProductCard } from "@/components/site/product-card";
-import { PortLabel, SectionHeading } from "@/components/ui/port-label";
 import { Reveal } from "@/components/ui/reveal";
-import { ArrowRight, WhatsAppIcon } from "@/components/ui/icons";
+import { Counter } from "@/components/ui/counter";
+import {
+  ArrowRight,
+  CategoryIcon,
+  CheckIcon,
+  HeadsetIcon,
+  PlayIcon,
+  QuoteIcon,
+  RouterIcon,
+  ServiceIcon,
+  WhatsAppIcon,
+} from "@/components/ui/icons";
+
+const PROJECT_IMAGES = ["/images/project-office.jpg", "/images/project-fibre.jpg", "/images/project-config.jpg"];
+const PROJECT_ICONS = ["switches", "cabling-and-racks", "routers"];
 
 export default async function HomePage() {
   const [site, brands, categories, featured, services, projects, testimonials] = await Promise.all([
@@ -18,227 +42,379 @@ export default async function HomePage() {
     getTestimonials(),
   ]);
   const productCount = categories.reduce((n, c) => n + c._count.products, 0);
+  const brandList = brands
+    .map((b) => b.name)
+    .join(", ")
+    .replace(/, ([^,]*)$/, " and $1");
 
   return (
     <>
-      {/* P-00 Hero */}
-      <section className="relative overflow-hidden bg-rack text-paper">
-        <div aria-hidden className="pointer-events-none absolute inset-0">
-          <div className="rack grid h-full grid-cols-6 md:grid-cols-12">
-            {Array.from({ length: 12 }).map((_, i) => (
-              <span key={i} className={`border-l border-rail-line-dark ${i >= 6 ? "hidden md:block" : ""}`} />
-            ))}
-          </div>
-        </div>
-        <div className="rack relative grid items-center gap-8 pb-14 pt-14 md:pt-20 lg:grid-cols-12 lg:pb-20">
-          <div className="lg:col-span-6">
-            <PortLabel port="P-00" tone="paper">
-              Networking hardware · Dhaka
-            </PortLabel>
-            <h1 className="display mt-6 text-[3.25rem] sm:text-[4.5rem] lg:text-[5.25rem]">
-              Switches, routers and Wi-Fi.
-              <span className="block text-signal">Supplied, cabled, running.</span>
-            </h1>
-            <p className="mt-6 max-w-lg text-lg text-rail">
-              Macnet Solutions supplies equipment from {brands.map((b) => b.name).join(", ").replace(/, ([^,]*)$/, " and $1")}, then designs,
-              cables, installs and supports the network around it.
-            </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Link href="/products" className="btn btn-signal">
-                Browse products <ArrowRight />
-              </Link>
-              <Link href="/quote" className="btn btn-ghost text-paper">
-                Request a quote
+      <HeroSlider brands={brandList} />
+
+      {/* Feature cards overlapping the hero */}
+      <section aria-label="Why Macnet" className="relative z-10 -mt-24 lg:-mt-[110px]">
+        <div className="container-x grid gap-6 md:grid-cols-3 lg:gap-[30px]">
+          <Reveal className="h-full">
+            <div className="fill-card card-shadow flex h-full flex-col items-center px-7 py-10 text-center">
+              <RouterIcon className="fc-icon h-12 w-12 text-red" />
+              <h3 className="fc-title mt-5 text-[1.375rem] font-semibold">Five brands, one order</h3>
+              <p className="fc-text mt-3 text-[0.9375rem]">Mix {brandList} on a single quote, with stock status shown on every listing.</p>
+            </div>
+          </Reveal>
+          <Reveal delay={0.15} className="h-full">
+            <div className="fill-card card-shadow flex h-full flex-col items-center px-7 py-10 text-center">
+              <HeadsetIcon className="fc-icon h-12 w-12 text-red" />
+              <h3 className="fc-title mt-5 text-[1.375rem] font-semibold">Install & AMC support</h3>
+              <p className="fc-text mt-3 text-[0.9375rem]">Our engineers rack, configure and hand over the network, then support it under contract.</p>
+            </div>
+          </Reveal>
+          <Reveal delay={0.3} className="h-full">
+            <div className="card-shadow flex h-full flex-col items-center bg-red px-7 py-10 text-center text-white">
+              <h3 className="text-[1.375rem] font-semibold text-white">Custom request</h3>
+              <p className="mt-3 text-[0.9375rem] text-white/90">
+                Send model numbers, a bill of materials or just the problem. We reply with a written quote.
+              </p>
+              <Link href="/quote" className="btn btn-white mt-6 min-h-11 px-6 text-xs">
+                Get a quote <ArrowRight className="h-3.5 w-3.5" />
               </Link>
             </div>
-            <dl className="mt-12 grid max-w-lg grid-cols-3 gap-4 border-t border-rail-line-dark pt-5">
-              {[
-                [String(brands.length), "brands"],
-                [`${productCount}`, "products"],
-                ["2", "Dhaka offices"],
-              ].map(([v, l]) => (
-                <div key={l}>
-                  <dt className="port uppercase text-rail">{l}</dt>
-                  <dd className="display mt-1 text-3xl">{v}</dd>
-                </div>
-              ))}
-            </dl>
-          </div>
-          <div className="lg:col-span-6">
-            <HeroVisual />
-          </div>
+          </Reveal>
         </div>
       </section>
 
-      {/* P-01 Brands */}
-      <section aria-labelledby="brands-title" className="border-b border-rail-line">
-        <div className="rack rails grid gap-6 py-8 md:grid-cols-12 md:items-center">
-          <p id="brands-title" className="port uppercase text-text-muted md:col-span-2">
-            P-01 · Brands
-          </p>
-          <ul className="grid grid-cols-2 border-l border-t border-rail-line sm:grid-cols-3 md:col-span-10 lg:grid-cols-6">
-            {brands.map((b) => (
-              <li key={b.id} className="border-b border-r border-rail-line">
-                <Link
-                  href={`/products?brand=${b.slug}`}
-                  className="flex h-16 items-center justify-between px-4 text-ink transition-colors hover:bg-white"
-                >
-                  <span className="heading text-lg">{b.name}</span>
-                  <span className="port text-rail">{b._count.products}</span>
+      {/* About */}
+      <section id="about" className="scroll-mt-24 py-20 md:py-28">
+        <div className="container-x grid items-center gap-14 lg:grid-cols-2 lg:gap-[70px]">
+          <Reveal from="left" className="relative pb-10 pr-6 sm:pr-10">
+            <div className="relative aspect-[5/6] overflow-hidden sm:aspect-[4/4.4]">
+              <Image
+                src="/images/about-engineers.jpg"
+                alt="Two engineers checking a network configuration on a laptop"
+                fill
+                sizes="(min-width: 1024px) 540px, 100vw"
+                className="object-cover"
+              />
+            </div>
+            <figure className="absolute bottom-0 right-0 w-[80%] max-w-[340px] bg-red p-6 text-white sm:p-8">
+              <QuoteIcon className="absolute right-5 top-4 h-10 w-10 text-white/90" />
+              <blockquote className="pr-8 font-display text-base font-semibold italic leading-relaxed sm:text-lg">
+                We plan every cut-over around your working hours, so the business keeps running while the network changes.
+              </blockquote>
+              <figcaption className="mt-4 text-sm text-white/85">Macnet engineering team</figcaption>
+              <span aria-hidden className="absolute -left-[34px] bottom-0 h-[40px] w-[34px] bg-red [clip-path:polygon(100%_0,100%_100%,0_100%)]" />
+            </figure>
+          </Reveal>
+
+          <Reveal from="right">
+            <p className="eyebrow">About us</p>
+            <h2 className="section-title mt-3">Your Networking Partner From Survey to Support</h2>
+            <p className="mt-5">
+              Macnet Solutions supplies networking equipment from {brandList}, then designs, cables, installs and supports the network
+              around it from our office in Dhaka.
+            </p>
+            <blockquote className="mt-7 border-l-[3px] border-red pl-6">
+              <p className="font-display font-semibold italic text-heading">
+                One supplier for the switch, the rack it sits in, the cabling behind it and the people who keep it running.
+              </p>
+              <p className="mt-3">Most orders come with design, cabling or installation. Pick one service or hand us the whole job.</p>
+            </blockquote>
+            <Link href="/quote" className="btn btn-red mt-8">
+              Get a quote
+            </Link>
+            <ul className="mt-8 space-y-3">
+              {["Written quotes, usually within one working day", "Engineers who configure before delivery", "Annual maintenance contracts with set response times"].map((t) => (
+                <li key={t} className="flex items-start gap-3">
+                  <CheckIcon className="mt-1 h-4 w-4 shrink-0 text-red" />
+                  {t}
+                </li>
+              ))}
+            </ul>
+          </Reveal>
+        </div>
+      </section>
+
+      <div className="container-x">
+        <hr className="border-line" />
+      </div>
+
+      {/* Services */}
+      <section id="services" className="scroll-mt-24 py-20 md:py-28">
+        <div className="container-x grid gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-[30px]">
+          <Reveal className="flex flex-col justify-center pb-4 sm:col-span-2 lg:col-span-1 lg:pr-6">
+            <p className="eyebrow">Our services</p>
+            <h2 className="section-title mt-3">Design, Cabling & Installation</h2>
+            <p className="mt-4">We don&apos;t just ship boxes. Pick one service or the whole job, from the first survey to the support contract.</p>
+            <div>
+              <Link href="/contact" className="btn btn-red mt-7">
+                Talk to an engineer
+              </Link>
+            </div>
+          </Reveal>
+          {services.map((s, i) => (
+            <Reveal key={s.id} delay={(i % 3) * 0.12} className="h-full">
+              <div className="fill-card card-shadow flex h-full flex-col items-center px-7 py-10 text-center">
+                <ServiceIcon index={i} className="fc-icon h-12 w-12 text-red" />
+                <h3 className="fc-title mt-5 text-[1.375rem] font-semibold">{s.title}</h3>
+                <p className="fc-text mt-3 text-[0.9375rem]">{s.summary}</p>
+                <Link href="/quote" className="link-more mt-5">
+                  Get a quote <ArrowRight className="h-3.5 w-3.5" />
+                  <span className="sr-only"> for {s.title.toLowerCase()}</span>
                 </Link>
-              </li>
+              </div>
+            </Reveal>
+          ))}
+          <Reveal delay={0.24} className="relative min-h-[260px] overflow-hidden">
+            <Image src="/images/services-briefing.jpg" alt="Engineer briefing a client team on a network plan" fill sizes="(min-width: 1024px) 380px, 100vw" className="object-cover" />
+            <div aria-hidden className="absolute inset-0 grid place-items-center bg-heading/25">
+              <span className="pulse-ring relative isolate grid h-[70px] w-[70px] place-items-center rounded-full bg-white text-red">
+                <PlayIcon className="ml-1 h-6 w-6" />
+              </span>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* Product range */}
+      <section aria-labelledby="range-title" className="bg-mist py-20 md:py-28">
+        <div className="container-x">
+          <Reveal className="mx-auto max-w-2xl text-center">
+            <p className="eyebrow">Product range</p>
+            <h2 id="range-title" className="section-title mt-3">From the Edge Switch to the Rack It Sits In</h2>
+            <p className="mt-4">Six product lines, stocked or sourced to order. Every listing shows stock status. Prices are quoted per order.</p>
+          </Reveal>
+          <ul className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-[30px]">
+            {categories.map((c, i) => (
+              <Reveal as="li" key={c.id} delay={(i % 3) * 0.12}>
+                <Link href={`/products?category=${c.slug}`} className="fill-card card-shadow flex h-full items-start gap-5 p-7">
+                  <CategoryIcon slug={c.slug} className="fc-icon h-12 w-12 shrink-0 text-red" />
+                  <span>
+                    <span className="fc-title block font-display text-xl font-semibold text-heading">{c.name}</span>
+                    <span className="fc-text mt-2 block text-[0.9375rem]">{c.description}</span>
+                    <span className="link-more mt-4">
+                      {c._count.products} products <ArrowRight className="h-3.5 w-3.5" />
+                    </span>
+                  </span>
+                </Link>
+              </Reveal>
             ))}
           </ul>
         </div>
       </section>
 
-      {/* P-02 Categories as rack units */}
-      <section className="py-20 md:py-28">
-        <div className="rack">
-          <SectionHeading
-            port="P-02"
-            label="Product range"
-            title="Everything from the edge switch to the rack it sits in."
-            intro="Six product lines, stocked or sourced to order. Every listing shows stock status. Prices are quoted per order."
-          />
-          <ol className="mt-12 border-t border-ink">
-            {categories.map((c, i) => (
-              <Reveal as="li" key={c.id} delay={i * 0.04}>
-                <Link
-                  href={`/products?category=${c.slug}`}
-                  className="group grid grid-cols-[auto_1fr_auto] items-center gap-4 border-b border-rail-line py-5 transition-colors hover:bg-white md:grid-cols-[6rem_1fr_1.4fr_6rem_2rem] md:gap-6 md:px-3"
-                >
-                  <span className="port flex items-center gap-2 text-text-muted">
-                    <span aria-hidden className="h-2 w-2 bg-rail-line transition-colors group-hover:bg-signal" />U-{String(i + 1).padStart(2, "0")}
-                  </span>
-                  <span className="heading text-xl text-ink md:text-2xl">{c.name}</span>
-                  <span className="hidden text-sm text-text-muted md:block">{c.description}</span>
-                  <span className="port text-right text-text-muted">{c._count.products} items</span>
-                  <ArrowRight className="hidden h-4 w-4 text-ink transition-transform group-hover:translate-x-1 md:block" />
-                </Link>
-              </Reveal>
-            ))}
-          </ol>
+      {/* Testimonials split */}
+      <section aria-labelledby="clients-title" className="grid lg:grid-cols-2">
+        <div className="relative min-h-[420px] overflow-hidden lg:min-h-[600px]">
+          <Image src="/images/clients-team.jpg" alt="Client team celebrating a finished office network" fill sizes="(min-width: 1024px) 50vw, 100vw" className="object-cover" />
+          <Reveal from="left" className="absolute bottom-0 left-0 w-[86%] max-w-[300px] bg-red p-7 text-white sm:p-8">
+            <h3 className="text-2xl font-bold text-white">Our Dhaka office</h3>
+            <p className="mt-3 text-[0.9375rem] text-white/90">
+              Visit us at Haque Chamber, 89/2 Panthapath (Suite 3A) to see equipment and talk to an engineer.
+            </p>
+            <Link href="/contact" className="mt-5 inline-flex items-center gap-2 font-display text-xs font-semibold uppercase tracking-[0.1em] text-white hover:underline">
+              Find us <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
+          </Reveal>
+        </div>
+        <div className="dot-pattern flex items-center bg-red px-6 py-16 text-center sm:px-12 lg:px-16 lg:py-20">
+          <Reveal className="mx-auto w-full max-w-xl">
+            <h2 id="clients-title" className="text-[1.875rem] font-bold text-white sm:text-[2.375rem]">What Clients Say About Us</h2>
+            <div className="mt-8">
+              <TestimonialSlider items={testimonials} />
+            </div>
+          </Reveal>
         </div>
       </section>
 
-      {/* P-03 Featured */}
-      <section className="border-y border-rail-line bg-paper-2/60 py-20 md:py-28">
-        <div className="rack">
-          <div className="flex flex-wrap items-end justify-between gap-6">
-            <SectionHeading port="P-03" label="Featured" title="Popular with our clients" />
-            <Link href="/products" className="btn btn-ghost text-ink">
-              All products <ArrowRight />
+      {/* Projects */}
+      <section id="projects" className="scroll-mt-24 py-20 md:py-28">
+        <div className="container-x">
+          <Reveal className="mx-auto max-w-2xl text-center">
+            <p className="eyebrow">Case studies</p>
+            <h2 className="section-title mt-3">Network Projects & Installs</h2>
+            <p className="mt-4">Sample case studies for now. Real client work will be published here as clients approve it.</p>
+          </Reveal>
+          <ul className="mt-14 grid gap-6 md:grid-cols-3 lg:gap-[30px]">
+            {projects.map((p, i) => (
+              <Reveal as="li" key={p.id} delay={i * 0.15}>
+                <article className="card-shadow group flex h-full flex-col bg-white">
+                  <div className="relative aspect-[16/10] overflow-hidden">
+                    <Image
+                      src={PROJECT_IMAGES[i % PROJECT_IMAGES.length]}
+                      alt=""
+                      fill
+                      sizes="(min-width: 768px) 33vw, 100vw"
+                      className="object-cover transition-transform duration-700 group-hover:scale-110 motion-reduce:transition-none"
+                    />
+                  </div>
+                  <div className="flex items-center gap-4 bg-red px-6 py-4 text-white">
+                    <CategoryIcon slug={PROJECT_ICONS[i % PROJECT_ICONS.length]} className="h-10 w-10 shrink-0" />
+                    <div>
+                      <h3 className="font-display text-lg font-semibold leading-snug text-white">{p.title}</h3>
+                      <p className="text-sm text-white/85">
+                        {p.sector}, {p.year}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex flex-1 flex-col px-6 pb-7 pt-5">
+                    <p className="text-[0.9375rem]">{p.summary}</p>
+                    <dl className="mt-auto grid grid-cols-3 gap-3 border-t border-line pt-5">
+                      {p.results.map((r) => (
+                        <div key={r.label} className="flex flex-col-reverse">
+                          <dt className="text-xs leading-snug">{r.label}</dt>
+                          <dd className="font-display text-xl font-bold text-red">{r.value}</dd>
+                        </div>
+                      ))}
+                    </dl>
+                  </div>
+                </article>
+              </Reveal>
+            ))}
+          </ul>
+          <Reveal className="mt-12 text-center text-[0.9375rem]">
+            Planning something similar?
+            <Link href="/quote" className="link-more ml-3">
+              Get a quote <ArrowRight className="h-3.5 w-3.5" />
             </Link>
-          </div>
-          <ul className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          </Reveal>
+        </div>
+      </section>
+
+      {/* Contact band with overlapping quote card */}
+      <section aria-labelledby="cta-title" className="relative">
+        <div className="relative isolate overflow-hidden bg-navy pb-44 pt-20 text-center md:pb-52 md:pt-28">
+          <Image src="/images/cta-patch-panel.jpg" alt="" fill sizes="100vw" className="-z-20 object-cover" />
+          <div aria-hidden className="absolute inset-0 -z-10 bg-[#0e1117]/80" />
+          <Reveal className="container-x">
+            <h2 id="cta-title" className="mx-auto max-w-3xl text-[1.875rem] font-bold leading-tight text-white sm:text-[2.625rem]">
+              Don&apos;t Wait on a Slow Network. Send Us Your List and We&apos;ll Price It.
+            </h2>
+            <p className="mx-auto mt-5 max-w-xl text-white/85">
+              Share model numbers, a bill of materials or just the problem you need solved. We usually reply within one working day.
+            </p>
+          </Reveal>
+        </div>
+        <div className="container-x relative z-10 -mt-32 md:-mt-36">
+          <Reveal className="card-shadow grid lg:grid-cols-[42%_1fr]">
+            <div className="relative isolate overflow-hidden bg-red px-7 py-12 text-white sm:px-10 lg:py-14">
+              <Image src="/images/quote-handshake.jpg" alt="" fill sizes="(min-width: 1024px) 480px, 100vw" className="-z-20 object-cover opacity-25 mix-blend-luminosity" />
+              <div aria-hidden className="absolute inset-0 -z-10 bg-red/80" />
+              <h3 className="text-[1.75rem] font-bold leading-tight text-white sm:text-[2.125rem]">One Supplier for the Whole Network</h3>
+              <p className="mt-5 text-white/95">
+                Hardware, cabling, installation and support on one quote, with lead times confirmed in writing before you order.
+              </p>
+              <ul className="mt-7 space-y-3">
+                {["Mixed-brand orders on a single quote", "Stock checked with suppliers first", "Engineer review of anything unclear", "Installation and AMC options included"].map((t) => (
+                  <li key={t} className="flex items-start gap-3 text-white">
+                    <CheckIcon className="mt-1 h-4 w-4 shrink-0" />
+                    {t}
+                  </li>
+                ))}
+              </ul>
+              <div className="mt-9 flex flex-wrap items-center gap-5">
+                <Link href="/products" className="btn btn-white">
+                  Browse products
+                </Link>
+                <a
+                  href={whatsappLink(site.whatsapp)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 font-display text-[0.8125rem] font-semibold uppercase tracking-[0.08em] text-white hover:underline"
+                >
+                  <WhatsAppIcon className="h-4 w-4" /> WhatsApp us
+                </a>
+              </div>
+            </div>
+            <div className="bg-white px-6 py-10 sm:px-10 lg:py-14">
+              <LeadForm type="QUOTE" variant="plain" whatsapp={site.whatsapp} source="home-page" />
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* Counters */}
+      <section aria-label="Macnet in numbers" className="pt-20 md:pt-24">
+        <dl className="container-x grid grid-cols-2 gap-y-10 text-center md:grid-cols-4">
+          {[
+            { v: brands.length, s: "", l: "Brands supplied" },
+            { v: productCount, s: "+", l: "Products listed" },
+            { v: categories.length, s: "", l: "Product lines" },
+            { v: CLIENTS.length, s: "", l: "Clients served" },
+          ].map((c, i) => (
+            <Reveal key={c.l} delay={i * 0.1} className="flex flex-col-reverse">
+              <dt className="mt-2 font-display text-[0.9375rem] font-medium text-heading">{c.l}</dt>
+              <dd className="font-display text-[2.75rem] font-bold leading-none text-red sm:text-5xl">
+                <Counter value={c.v} suffix={c.s} />
+              </dd>
+            </Reveal>
+          ))}
+        </dl>
+      </section>
+
+      {/* Brands */}
+      <section aria-labelledby="brands-title" className="py-20 md:py-24">
+        <div className="container-x">
+          <Reveal>
+            <h2 id="brands-title" className="text-center text-xl font-semibold sm:text-2xl">
+              Trusted Brands We Supply & Support
+            </h2>
+          </Reveal>
+          <ul className="mt-12 grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-5">
+            {brands.map((b, i) => (
+              <Reveal as="li" key={b.id} delay={i * 0.06}>
+                <Link
+                  href={`/products?brand=${b.slug}`}
+                  className="group flex h-20 flex-col items-center justify-center text-[#9a9da6] transition-colors duration-300 hover:text-red"
+                >
+                  <span className="font-display text-2xl font-bold tracking-tight">{b.name}</span>
+                  <span className="text-xs text-body opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100">
+                    {b._count.products} products
+                  </span>
+                </Link>
+              </Reveal>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      {/* Clients */}
+      <section aria-labelledby="clients-list-title" className="border-t border-line bg-mist py-20 md:py-24">
+        <div className="container-x">
+          <Reveal className="mx-auto max-w-2xl text-center">
+            <p className="eyebrow">Our clients</p>
+            <h2 id="clients-list-title" className="section-title mt-3">Businesses That Run on Our Networks</h2>
+          </Reveal>
+          <ul className="mt-12 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5 lg:gap-6">
+            {CLIENTS.map((name, i) => (
+              <Reveal as="li" key={name} delay={i * 0.06}>
+                <div className="flex h-24 items-center justify-center border border-line bg-white px-4 text-center font-display text-lg font-semibold text-heading">
+                  {name}
+                </div>
+              </Reveal>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      {/* Featured */}
+      <section aria-labelledby="featured-title" className="border-t border-line py-20 md:py-28">
+        <div className="container-x">
+          <Reveal className="mx-auto max-w-2xl text-center">
+            <p className="eyebrow">Featured</p>
+            <h2 id="featured-title" className="section-title mt-3">Popular With Our Clients</h2>
+            <p className="mt-4">Hardware we supply most often. Open any listing for full specifications and a quote.</p>
+          </Reveal>
+          <ul className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-[30px]">
             {featured.map((p, i) => (
-              <Reveal as="li" key={p.id} delay={(i % 3) * 0.06}>
+              <Reveal as="li" key={p.id} delay={(i % 3) * 0.12}>
                 <ProductCard product={p} />
               </Reveal>
             ))}
           </ul>
-        </div>
-      </section>
-
-      {/* P-04 Services */}
-      <section id="services" className="scroll-mt-20 py-20 md:py-28">
-        <div className="rack">
-          <SectionHeading
-            port="P-04"
-            label="Services"
-            title="We don't just ship boxes."
-            intro="Most orders come with design, cabling or installation. Pick one service or the whole job."
-          />
-          <ol className="mt-12 grid border-l border-t border-rail-line md:grid-cols-2 lg:grid-cols-4">
-            {services.map((s, i) => (
-              <Reveal as="li" key={s.id} delay={i * 0.06} className="flex flex-col border-b border-r border-rail-line bg-white p-6">
-                <span className="display text-5xl text-rail-line">{String(i + 1).padStart(2, "0")}</span>
-                <h3 className="heading mt-6 text-xl text-ink">{s.title}</h3>
-                <p className="mt-3 text-sm text-text-muted">{s.summary}</p>
-                <ul className="mt-5 space-y-2 border-t border-rail-line pt-4">
-                  {s.points.map((pt) => (
-                    <li key={pt} className="flex gap-2 text-sm">
-                      <span aria-hidden className="mt-[7px] h-1.5 w-1.5 shrink-0 bg-signal" />
-                      {pt}
-                    </li>
-                  ))}
-                </ul>
-              </Reveal>
-            ))}
-          </ol>
-        </div>
-      </section>
-
-      {/* P-05 Projects */}
-      <section id="projects" className="scroll-mt-20 bg-rack py-20 text-paper md:py-28">
-        <div className="rack">
-          <SectionHeading
-            port="P-05"
-            label="Projects"
-            tone="paper"
-            title="Recent installs"
-            intro="Sample case studies for now. Real client work will be published here."
-          />
-          <ul className="mt-12 grid gap-px bg-rail-line-dark md:grid-cols-3">
-            {projects.map((p, i) => (
-              <Reveal as="li" key={p.id} delay={i * 0.06} className="flex flex-col bg-rack p-6 md:p-8">
-                <p className="port uppercase text-signal">
-                  {p.sector} · {p.year}
-                </p>
-                <h3 className="heading mt-3 text-2xl">{p.title}</h3>
-                <p className="mt-3 flex-1 text-sm text-rail">{p.summary}</p>
-                <dl className="mt-8 grid grid-cols-3 gap-3 border-t border-rail-line-dark pt-5">
-                  {p.results.map((r) => (
-                    <div key={r.label}>
-                      <dd className="display text-2xl">{r.value}</dd>
-                      <dt className="port mt-1 min-h-[2.6em] text-[0.6875rem] uppercase text-rail">{r.label}</dt>
-                    </div>
-                  ))}
-                </dl>
-              </Reveal>
-            ))}
-          </ul>
-        </div>
-      </section>
-
-      {/* P-06 Testimonials */}
-      <section className="py-20 md:py-28">
-        <div className="rack">
-          <SectionHeading port="P-06" label="Clients" title="What clients say" intro="Sample testimonials until client quotes are approved." />
-          <ul className="mt-12 grid gap-x-10 md:grid-cols-2">
-            {testimonials.map((t, i) => (
-              <Reveal as="li" key={t.id} delay={(i % 2) * 0.06} className="border-t border-ink py-8">
-                <blockquote className="heading text-2xl text-ink">“{t.quote}”</blockquote>
-                <p className="port mt-5 uppercase text-text-muted">
-                  {t.name} · {t.role}, {t.company}
-                </p>
-              </Reveal>
-            ))}
-          </ul>
-        </div>
-      </section>
-
-      {/* P-07 CTA */}
-      <section className="border-t border-rail-line bg-ink text-paper">
-        <div className="rack grid gap-8 py-16 md:grid-cols-12 md:items-center md:py-20">
-          <div className="md:col-span-7">
-            <PortLabel port="P-07" tone="paper">
-              Request a quote
-            </PortLabel>
-            <h2 className="display mt-5 text-4xl md:text-6xl">Send us your list. We&apos;ll price it.</h2>
-            <p className="mt-4 max-w-lg text-[#c9c9e0]">
-              Share model numbers, a bill of materials or just the problem you need solved. We usually reply within one working day.
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-3 md:col-span-5 md:justify-end">
-            <Link href="/quote" className="btn btn-signal">
-              Request a quote <ArrowRight />
+          <Reveal className="mt-12 text-center">
+            <Link href="/products" className="btn btn-red">
+              All products
             </Link>
-            <a href={whatsappLink(site.whatsapp)} target="_blank" rel="noopener noreferrer" className="btn btn-ghost text-paper">
-              <WhatsAppIcon className="h-4 w-4" /> WhatsApp us
-            </a>
-          </div>
+          </Reveal>
         </div>
       </section>
     </>

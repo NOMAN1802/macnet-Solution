@@ -7,11 +7,10 @@ export function WhatsAppFloat({ number }: { number: string }) {
       href={whatsappLink(number, "Hello Macnet Solutions, I'd like to ask about networking equipment.")}
       target="_blank"
       rel="noopener noreferrer"
-      className="fixed bottom-5 right-5 z-40 inline-flex h-12 items-center gap-2 border border-[#3a3d4a] bg-rack px-4 text-paper shadow-[0_6px_20px_rgb(14_15_20/0.25)] transition-transform hover:-translate-y-0.5 motion-reduce:transition-none"
+      className="pulse-ring fixed bottom-5 right-5 z-40 isolate grid h-14 w-14 place-items-center rounded-full bg-[#1fa855] text-white shadow-[0_8px_24px_rgb(0_0_0/0.25)] transition-transform duration-300 hover:scale-110 motion-reduce:transition-none"
       aria-label="Chat with Macnet Solutions on WhatsApp"
     >
-      <WhatsAppIcon className="h-5 w-5 text-led-green" />
-      <span className="port hidden uppercase sm:inline">WhatsApp</span>
+      <WhatsAppIcon className="h-7 w-7" />
     </a>
   );
 }

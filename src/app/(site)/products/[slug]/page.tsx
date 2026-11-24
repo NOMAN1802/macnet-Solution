@@ -2,11 +2,14 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 import { getProduct, getProductSlugs, getSiteSettings } from "@/lib/data";
 import { whatsappLink } from "@/lib/site";
 import { ProductCard } from "@/components/site/product-card";
+import { PageBanner } from "@/components/site/page-banner";
 import { StockLed } from "@/components/ui/stock-led";
-import { ArrowRight, WhatsAppIcon } from "@/components/ui/icons";
+import { Reveal } from "@/components/ui/reveal";
+import { ArrowRight, BarcodeIcon, ClockIcon, LayersIcon, TagIcon, WhatsAppIcon } from "@/components/ui/icons";
 
 export async function generateStaticParams() {
   const rows = await getProductSlugs();
@@ -28,7 +31,36 @@ function plainParagraphs(body: unknown): string[] {
   return root.content.map((n) => (n.content ?? []).map((c) => c.text ?? "").join("")).filter(Boolean);
 }
 
-export default async function ProductPage({ params }: PageProps<"/products/[slug]">) {
+type Params = PageProps<"/products/[slug]">["params"];
+
+/** Shown while a product that was not prerendered streams in. Known slugs are prerendered via generateStaticParams. */
+function ProductFallback() {
+  return (
+    <>
+      <PageBanner title="Products" image="/images/banner-desk.jpg" crumbs={[{ label: "Products", href: "/products" }]} />
+      <section className="py-16 md:py-24" aria-busy="true" aria-label="Loading product">
+        <div className="container-x grid gap-12 lg:grid-cols-12 lg:gap-[30px]">
+          <div className="card-shadow aspect-[4/3] animate-pulse bg-mist lg:col-span-7" />
+          <div className="space-y-4 lg:col-span-5 lg:pl-4">
+            <div className="h-4 w-24 animate-pulse bg-mist" />
+            <div className="h-9 w-3/4 animate-pulse bg-mist" />
+            <div className="h-20 w-full animate-pulse bg-mist" />
+          </div>
+        </div>
+      </section>
+    </>
+  );
+}
+
+export default function ProductPage({ params }: PageProps<"/products/[slug]">) {
+  return (
+    <Suspense fallback={<ProductFallback />}>
+      <ProductDetail params={params} />
+    </Suspense>
+  );
+}
+
+async function ProductDetail({ params }: { params: Params }) {
   const { slug } = await params;
   const [data, site] = await Promise.all([getProduct(slug), getSiteSettings()]);
   if (!data) notFound();
@@ -40,98 +72,119 @@ export default async function ProductPage({ params }: PageProps<"/products/[slug
   }, {});
   const paras = plainParagraphs(product.body);
 
+  const meta = [
+    { icon: TagIcon, label: "Brand", value: <Link href={`/products?brand=${product.brand.slug}`} className="hover:text-red">{product.brand.name}</Link> },
+    { icon: LayersIcon, label: "Category", value: <Link href={`/products?category=${product.category.slug}`} className="hover:text-red">{product.category.name}</Link> },
+    { icon: BarcodeIcon, label: "SKU", value: product.sku },
+    { icon: ClockIcon, label: "Availability", value: <StockLed stock={product.stock} className="text-body" /> },
+  ];
+
   return (
     <>
-      <div className="border-b border-rail-line">
-        <nav aria-label="Breadcrumb" className="rack port flex flex-wrap items-center gap-2 py-4 uppercase text-text-muted">
-          <Link href="/products" className="hover:text-ink">Products</Link>
-          <span aria-hidden>/</span>
-          <Link href={`/products?category=${product.category.slug}`} className="hover:text-ink">{product.category.name}</Link>
-          <span aria-hidden>/</span>
-          <span className="text-ink">{product.sku}</span>
-        </nav>
-      </div>
+      <PageBanner
+        title={product.name}
+        image="/images/banner-desk.jpg"
+        crumbs={[
+          { label: "Products", href: "/products" },
+          { label: product.category.name, href: `/products?category=${product.category.slug}` },
+          { label: product.sku },
+        ]}
+      />
 
-      <section className="rack grid gap-10 py-12 lg:grid-cols-12 lg:py-16">
-        <div className="lg:col-span-7">
-          <div className="relative border border-rail-line bg-white">
-            {img ? (
-              <Image src={img.url} alt={img.alt} width={img.width} height={img.height} priority sizes="(min-width: 1024px) 58vw, 100vw" className="h-auto w-full" />
+      <section className="py-16 md:py-24">
+        <div className="container-x grid gap-12 lg:grid-cols-12 lg:gap-[30px]">
+          <Reveal from="left" className="lg:col-span-7">
+            <div className="card-shadow overflow-hidden bg-white">
+              {img ? (
+                <Image src={img.url} alt={img.alt} width={img.width} height={img.height} loading="eager" fetchPriority="high" sizes="(min-width: 1024px) 58vw, 100vw" className="h-auto w-full" />
+              ) : null}
+            </div>
+          </Reveal>
+
+          <Reveal from="right" className="lg:col-span-5 lg:pl-4">
+            <p className="eyebrow">{product.brand.name}</p>
+            <h2 className="mt-3 text-[1.75rem] font-bold sm:text-[2rem]">{product.name}</h2>
+            <p className="mt-4">{product.pitch}</p>
+
+            <dl className="mt-7 grid gap-6 sm:grid-cols-2">
+              {meta.map((m) => (
+                <div key={m.label} className="flex gap-4">
+                  <m.icon className="h-8 w-8 shrink-0 text-red" />
+                  <div>
+                    <dt className="font-display text-[1.0625rem] font-semibold text-heading">{m.label}</dt>
+                    <dd className="mt-0.5 text-[0.9375rem]">{m.value}</dd>
+                  </div>
+                </div>
+              ))}
+            </dl>
+
+            {product.isMock ? (
+              <p className="mt-6 inline-block border-l-4 border-led-amber bg-[#fff7e8] px-3 py-2 text-sm text-[#7a5200]">Sample data. Specs are illustrative.</p>
             ) : null}
-            <span className="port absolute left-4 top-4 uppercase text-text-muted">Fig. 01</span>
-          </div>
+
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Link href={`/quote?product=${product.slug}`} className="btn btn-red">
+                Request a quote <ArrowRight />
+              </Link>
+              <a
+                href={whatsappLink(site.whatsapp, `Hello, I'd like a price for ${product.name} (SKU ${product.sku}).`)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-ghost text-heading"
+              >
+                <WhatsAppIcon className="h-4 w-4" /> Ask on WhatsApp
+              </a>
+            </div>
+            <p className="mt-4 text-sm">Pricing and lead time are confirmed in your written quote.</p>
+          </Reveal>
         </div>
 
-        <div className="lg:col-span-5">
-          <p className="port uppercase text-signal-ink">
-            <Link href={`/products?brand=${product.brand.slug}`} className="hover:underline">{product.brand.name}</Link>
-          </p>
-          <h1 className="heading mt-3 text-4xl text-ink md:text-5xl">{product.name}</h1>
-          <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-2 border-y border-rail-line py-3">
-            <span className="port uppercase text-text-muted">SKU <span className="text-text">{product.sku}</span></span>
-            <StockLed stock={product.stock} className="text-text" />
-          </div>
-          <p className="mt-5 text-lg text-text">{product.pitch}</p>
-          {paras.slice(1).map((p) => (
-            <p key={p} className="mt-3 text-sm text-text-muted">{p}</p>
-          ))}
-          {product.isMock ? (
-            <p className="port mt-4 inline-block border border-led-amber px-2 py-1 uppercase text-[#8a5a00]">Sample data · specs illustrative</p>
-          ) : null}
-
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Link href={`/quote?product=${product.slug}`} className="btn btn-primary">
-              Request a quote <ArrowRight />
-            </Link>
-            <a
-              href={whatsappLink(site.whatsapp, `Hello, I'd like a price for ${product.name} (SKU ${product.sku}).`)}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn btn-ghost text-ink"
-            >
-              <WhatsAppIcon className="h-4 w-4" /> Ask on WhatsApp
-            </a>
-          </div>
-          <p className="mt-4 text-sm text-text-muted">Pricing and lead time are confirmed in your written quote.</p>
-        </div>
-      </section>
-
-      <section className="border-t border-rail-line bg-white">
-        <div className="rack grid gap-10 py-14 lg:grid-cols-12">
-          <div className="lg:col-span-3">
-            <p className="port uppercase text-text-muted">Datasheet</p>
-            <h2 className="heading mt-3 text-3xl text-ink">Specifications</h2>
-            {product.datasheet ? (
-              <a href={product.datasheet} className="btn btn-ghost mt-6 text-ink" target="_blank" rel="noopener noreferrer">Download PDF</a>
-            ) : null}
-          </div>
-          <div className="lg:col-span-9">
-            {Object.entries(groups).map(([group, rows]) => (
-              <table key={group} className="mb-8 w-full border-collapse text-left">
-                <caption className="port border-b border-ink pb-2 text-left uppercase text-ink">{group}</caption>
-                <tbody>
-                  {rows.map((r) => (
-                    <tr key={r.label} className="border-b border-rail-line">
-                      <th scope="row" className="w-2/5 py-3 pr-4 text-sm font-normal text-text-muted">{r.label}</th>
-                      <td className="port py-3 text-[0.875rem] text-text">{r.value}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+        <div className="container-x mt-16 grid gap-12 lg:grid-cols-12 lg:gap-[30px]">
+          <Reveal className="lg:col-span-5">
+            <h2 className="text-2xl font-bold">Overview</h2>
+            {(paras.length ? paras : [product.pitch]).map((p) => (
+              <p key={p} className="mt-4">{p}</p>
             ))}
-          </div>
+            {product.datasheet ? (
+              <a href={product.datasheet} className="btn btn-ghost mt-7 text-heading" target="_blank" rel="noopener noreferrer">
+                Download datasheet
+              </a>
+            ) : null}
+          </Reveal>
+
+          <Reveal delay={0.1} className="lg:col-span-7">
+            <h2 className="text-2xl font-bold">Specifications</h2>
+            <div className="mt-6 space-y-8">
+              {Object.entries(groups).map(([group, rows]) => (
+                <table key={group} className="card-shadow w-full border-collapse bg-white text-left">
+                  <caption className="bg-red px-5 py-3 text-left font-display text-[0.9375rem] font-semibold text-white">{group}</caption>
+                  <tbody>
+                    {rows.map((r, i) => (
+                      <tr key={r.label} className={i % 2 ? "bg-mist" : "bg-white"}>
+                        <th scope="row" className="w-2/5 px-5 py-3 align-top text-[0.9375rem] font-medium text-heading">{r.label}</th>
+                        <td className="px-5 py-3 text-[0.9375rem]">{r.value}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              ))}
+            </div>
+          </Reveal>
         </div>
       </section>
 
       {related.length ? (
-        <section className="border-t border-rail-line py-16">
-          <div className="rack">
-            <p className="port uppercase text-text-muted">More in {product.category.name}</p>
-            <ul className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {related.map((p) => (
-                <li key={p.id}>
+        <section className="bg-mist py-20 md:py-24">
+          <div className="container-x">
+            <Reveal className="mx-auto max-w-2xl text-center">
+              <p className="eyebrow">Related</p>
+              <h2 className="section-title mt-3">More in {product.category.name}</h2>
+            </Reveal>
+            <ul className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-[30px]">
+              {related.map((p, i) => (
+                <Reveal as="li" key={p.id} delay={i * 0.12}>
                   <ProductCard product={p} />
-                </li>
+                </Reveal>
               ))}
             </ul>
           </div>

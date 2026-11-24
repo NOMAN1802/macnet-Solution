@@ -11,11 +11,11 @@ mkdirSync(OUT, { recursive: true });
 
 const W = 800;
 const H = 600;
-const ink = "#23235B";
+const ink = "#232631";
 const rail = "#8A8D99";
-const paper = "#F4F3EE";
-const line = "#D6D4CB";
-const cyan = "#19B6D8";
+const paper = "#F6F7F9";
+const line = "#E2E4E9";
+const cyan = "#FD384A";
 
 function frame(inner: string, label: string) {
   const grid = Array.from({ length: 11 }, (_, i) => `<line x1="${(i + 1) * 66.6}" y1="0" x2="${(i + 1) * 66.6}" y2="${H}" stroke="${line}" stroke-width="1"/>`).join("");

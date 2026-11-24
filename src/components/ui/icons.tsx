@@ -1,9 +1,35 @@
-/** Small inline icons (stroke-based, currentColor). */
+/** Inline icons (currentColor). Line icons use a 1.5 stroke like the reference template's red outline icons. */
 type P = { className?: string };
 
+const line = { fill: "none", stroke: "currentColor", strokeWidth: 1.5, strokeLinecap: "round", strokeLinejoin: "round" } as const;
+
 export const ArrowRight = ({ className = "h-4 w-4" }: P) => (
-  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" className={className} aria-hidden>
+  <svg viewBox="0 0 16 16" {...line} strokeWidth={1.6} className={className} aria-hidden>
     <path d="M2 8h11M9 4l4 4-4 4" />
+  </svg>
+);
+
+export const ChevronRight = ({ className = "h-3.5 w-3.5" }: P) => (
+  <svg viewBox="0 0 16 16" {...line} strokeWidth={2} className={className} aria-hidden>
+    <path d="m6 3 5 5-5 5" />
+  </svg>
+);
+
+export const CheckIcon = ({ className = "h-4 w-4" }: P) => (
+  <svg viewBox="0 0 16 16" {...line} strokeWidth={2.2} className={className} aria-hidden>
+    <path d="m2.5 8.5 3.5 3.5 7.5-8" />
+  </svg>
+);
+
+export const PlayIcon = ({ className = "h-5 w-5" }: P) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden>
+    <path d="M8 5.5v13a.8.8 0 0 0 1.2.7l10.4-6.5a.8.8 0 0 0 0-1.4L9.2 4.8A.8.8 0 0 0 8 5.5Z" />
+  </svg>
+);
+
+export const QuoteIcon = ({ className = "h-8 w-8" }: P) => (
+  <svg viewBox="0 0 32 32" fill="currentColor" className={className} aria-hidden>
+    <path d="M13 8C7.5 9.3 4 13.6 4 19.3V24h8.5v-8.4H8.3c.3-3 2.2-5.1 5.2-5.9L13 8Zm15 0c-5.5 1.3-9 5.6-9 11.3V24h8.5v-8.4h-4.2c.3-3 2.2-5.1 5.2-5.9L28 8Z" />
   </svg>
 );
 
@@ -14,21 +40,167 @@ export const WhatsAppIcon = ({ className = "h-5 w-5" }: P) => (
 );
 
 export const PhoneIcon = ({ className = "h-4 w-4" }: P) => (
-  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" className={className} aria-hidden>
-    <path d="M3 1.8h2.6l1.2 3.1-1.6 1a8 8 0 0 0 4 4l1-1.6 3 1.2v2.7a1.3 1.3 0 0 1-1.4 1.3A12 12 0 0 1 1.7 3.2 1.3 1.3 0 0 1 3 1.8Z" />
+  <svg viewBox="0 0 24 24" {...line} className={className} aria-hidden>
+    <path d="M5 3h3.5l1.8 4.6-2.3 1.5a11 11 0 0 0 6 6l1.5-2.3L20 14.5V18a2 2 0 0 1-2.1 2A16 16 0 0 1 3 5.1 2 2 0 0 1 5 3Z" />
   </svg>
 );
 
 export const MailIcon = ({ className = "h-4 w-4" }: P) => (
-  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" className={className} aria-hidden>
-    <rect x="1.5" y="3" width="13" height="10" />
-    <path d="m1.8 3.4 6.2 5 6.2-5" />
+  <svg viewBox="0 0 24 24" {...line} className={className} aria-hidden>
+    <rect x="2.5" y="5" width="19" height="14" rx="1" />
+    <path d="m3 6 9 7 9-7" />
   </svg>
 );
 
 export const PinIcon = ({ className = "h-4 w-4" }: P) => (
-  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" className={className} aria-hidden>
-    <path d="M8 14.5s5-4.4 5-8.2A5 5 0 0 0 3 6.3c0 3.8 5 8.2 5 8.2Z" />
-    <circle cx="8" cy="6.3" r="1.8" />
+  <svg viewBox="0 0 24 24" {...line} className={className} aria-hidden>
+    <path d="M12 21.5s7-6.2 7-11.8A7 7 0 0 0 5 9.7c0 5.6 7 11.8 7 11.8Z" />
+    <circle cx="12" cy="9.5" r="2.6" />
   </svg>
 );
+
+export const SearchIcon = ({ className = "h-4 w-4" }: P) => (
+  <svg viewBox="0 0 24 24" {...line} strokeWidth={2} className={className} aria-hidden>
+    <circle cx="11" cy="11" r="7" />
+    <path d="m20 20-4-4" />
+  </svg>
+);
+
+/* ---- Feature / service line icons ---- */
+
+export const SwitchIcon = ({ className = "h-11 w-11" }: P) => (
+  <svg viewBox="0 0 48 48" {...line} className={className} aria-hidden>
+    <rect x="4" y="16" width="40" height="14" rx="1.5" />
+    <path d="M9 21h3v4H9zM15 21h3v4h-3zM21 21h3v4h-3zM27 21h3v4h-3z" />
+    <circle cx="37" cy="23" r="1.4" />
+    <path d="M9 30v4M39 30v4M12 12h24" />
+  </svg>
+);
+
+export const RouterIcon = ({ className = "h-11 w-11" }: P) => (
+  <svg viewBox="0 0 48 48" {...line} className={className} aria-hidden>
+    <rect x="5" y="27" width="38" height="11" rx="2" />
+    <path d="M12 27V17M36 27V17M11 32.5h2M17 32.5h2M23 32.5h2" />
+    <path d="M18 13a8 8 0 0 1 12 0M15 9.5a13 13 0 0 1 18 0" />
+    <circle cx="37" cy="32.5" r="1.2" />
+  </svg>
+);
+
+export const WifiIcon = ({ className = "h-11 w-11" }: P) => (
+  <svg viewBox="0 0 48 48" {...line} className={className} aria-hidden>
+    <path d="M6 18a26 26 0 0 1 36 0M11 24a19 19 0 0 1 26 0M16.5 30a11 11 0 0 1 15 0" />
+    <circle cx="24" cy="36" r="2.2" />
+  </svg>
+);
+
+export const ShieldIcon = ({ className = "h-11 w-11" }: P) => (
+  <svg viewBox="0 0 48 48" {...line} className={className} aria-hidden>
+    <path d="M24 5 8 11v11c0 10 7 18 16 21 9-3 16-11 16-21V11L24 5Z" />
+    <rect x="18" y="21" width="12" height="10" rx="1" />
+    <path d="M20.5 21v-3a3.5 3.5 0 0 1 7 0v3" />
+  </svg>
+);
+
+export const FibreIcon = ({ className = "h-11 w-11" }: P) => (
+  <svg viewBox="0 0 48 48" {...line} className={className} aria-hidden>
+    <path d="M4 34c8 0 10-20 20-20s12 20 20 20" />
+    <path d="M4 26c8 0 10-12 20-12M24 14c10 0 12 12 20 12" opacity=".6" />
+    <rect x="20" y="10" width="8" height="8" rx="1" />
+  </svg>
+);
+
+export const RackIcon = ({ className = "h-11 w-11" }: P) => (
+  <svg viewBox="0 0 48 48" {...line} className={className} aria-hidden>
+    <rect x="10" y="4" width="28" height="40" rx="1.5" />
+    <path d="M14 11h20v7H14zM14 22h20v7H14zM14 33h20v6H14z" />
+    <circle cx="30" cy="14.5" r="1" />
+    <circle cx="30" cy="25.5" r="1" />
+  </svg>
+);
+
+export const BlueprintIcon = ({ className = "h-11 w-11" }: P) => (
+  <svg viewBox="0 0 48 48" {...line} className={className} aria-hidden>
+    <rect x="6" y="8" width="36" height="30" rx="1.5" />
+    <path d="M6 16h36M14 24h8v8h-8zM28 24h8M28 29h6M32 38v4M16 38v4" />
+  </svg>
+);
+
+export const CableIcon = ({ className = "h-11 w-11" }: P) => (
+  <svg viewBox="0 0 48 48" {...line} className={className} aria-hidden>
+    <path d="M16 4v8M24 4v8M12 12h16v8a8 8 0 0 1-16 0v-8ZM20 28v6a8 8 0 0 0 8 8h4a8 8 0 0 0 8-8V20" />
+    <rect x="34" y="12" width="12" height="8" rx="1" />
+  </svg>
+);
+
+export const ToolsIcon = ({ className = "h-11 w-11" }: P) => (
+  <svg viewBox="0 0 48 48" {...line} className={className} aria-hidden>
+    <path d="M30 6a9 9 0 0 0-8.5 12L6 33.5a3.5 3.5 0 0 0 5 5L26.5 23A9 9 0 0 0 38 13.5l-5 5-5-1-1-5 5-5A9 9 0 0 0 30 6Z" />
+  </svg>
+);
+
+export const HeadsetIcon = ({ className = "h-11 w-11" }: P) => (
+  <svg viewBox="0 0 48 48" {...line} className={className} aria-hidden>
+    <path d="M9 26v-4a15 15 0 0 1 30 0v4" />
+    <rect x="6" y="25" width="7" height="12" rx="2" />
+    <rect x="35" y="25" width="7" height="12" rx="2" />
+    <path d="M38.5 37c0 4-4 6-10 6h-3" />
+    <path d="m19 22 3.5 3.5L29 19" />
+  </svg>
+);
+
+export const BoxIcon = ({ className = "h-11 w-11" }: P) => (
+  <svg viewBox="0 0 48 48" {...line} className={className} aria-hidden>
+    <path d="M24 4 6 13v22l18 9 18-9V13L24 4Z" />
+    <path d="m6 13 18 9 18-9M24 22v22M15 8.5l18 9" />
+  </svg>
+);
+
+export const TagIcon = ({ className = "h-7 w-7" }: P) => (
+  <svg viewBox="0 0 32 32" {...line} className={className} aria-hidden>
+    <path d="M4 4h11l13 13-11 11L4 15V4Z" />
+    <circle cx="10" cy="10" r="2" />
+  </svg>
+);
+
+export const LayersIcon = ({ className = "h-7 w-7" }: P) => (
+  <svg viewBox="0 0 32 32" {...line} className={className} aria-hidden>
+    <path d="m16 4 13 7-13 7-13-7 13-7Z" />
+    <path d="m3 16 13 7 13-7M3 21l13 7 13-7" />
+  </svg>
+);
+
+export const BarcodeIcon = ({ className = "h-7 w-7" }: P) => (
+  <svg viewBox="0 0 32 32" {...line} className={className} aria-hidden>
+    <path d="M4 7v18M8 7v18M11 7v18M15 7v18M19 7v18M22 7v18M25 7v18M28 7v18" />
+  </svg>
+);
+
+export const ClockIcon = ({ className = "h-7 w-7" }: P) => (
+  <svg viewBox="0 0 32 32" {...line} className={className} aria-hidden>
+    <circle cx="16" cy="16" r="12" />
+    <path d="M16 9v7l5 3" />
+  </svg>
+);
+
+const CATEGORY_ICONS: Record<string, (p: P) => React.ReactElement> = {
+  switches: SwitchIcon,
+  routers: RouterIcon,
+  "wireless-access-points": WifiIcon,
+  firewalls: ShieldIcon,
+  "fibre-and-sfp": FibreIcon,
+  "cabling-and-racks": RackIcon,
+};
+
+/** Icon for a product category slug, falling back to a box. */
+export function CategoryIcon({ slug, className }: { slug: string; className?: string }) {
+  const Icon = CATEGORY_ICONS[slug] ?? BoxIcon;
+  return <Icon className={className} />;
+}
+
+const SERVICE_ICONS = [BlueprintIcon, CableIcon, ToolsIcon, HeadsetIcon];
+
+/** Icon for a service by its position (design, cabling, install, support). */
+export function ServiceIcon({ index, className }: { index: number; className?: string }) {
+  const Icon = SERVICE_ICONS[index % SERVICE_ICONS.length];
+  return <Icon className={className} />;
+}

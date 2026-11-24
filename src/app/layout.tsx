@@ -1,16 +1,16 @@
 import type { Metadata } from "next";
-import { Archivo, JetBrains_Mono } from "next/font/google";
+import { Inter, Roboto } from "next/font/google";
 import "./globals.css";
 
-const archivo = Archivo({
-  variable: "--font-archivo",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
-  axes: ["wdth"],
 });
 
-const jetbrains = JetBrains_Mono({
-  variable: "--font-jetbrains",
+const roboto = Roboto({
+  variable: "--font-roboto",
   subsets: ["latin"],
+  weight: ["300", "400", "500", "700"],
 });
 
 export const metadata: Metadata = {
@@ -20,12 +20,12 @@ export const metadata: Metadata = {
     template: "%s | Macnet Solutions",
   },
   description:
-    "Switches, routers, wireless, firewalls, fibre and structured cabling from Cisco, MikroTik, Ubiquiti, TP-Link, Ruijie and D-Link, supplied and installed by Macnet Solutions in Dhaka.",
+    "Switches, routers, wireless, firewalls, fibre and structured cabling from Ubiquiti, Cisco, Tenda, Rosenberger and TP-Link, supplied and installed by Macnet Solutions in Dhaka.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${archivo.variable} ${jetbrains.variable} h-full antialiased`}>
+    <html lang="en" className={`${inter.variable} ${roboto.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );

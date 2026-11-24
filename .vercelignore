@@ -1,0 +1,15 @@
+# Keep secrets, local tooling and design references out of Vercel uploads
+.env
+.env.*
+!.env.example
+.dev.log
+.DS_Store
+node_modules
+.next
+assets
+e2e
+test-results
+playwright-report
+playwright.config.ts
+docker-compose.yml
+*.tsbuildinfo

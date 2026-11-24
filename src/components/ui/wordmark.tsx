@@ -1,21 +1,12 @@
+import Image from "next/image";
 import Link from "next/link";
 
-/** Text wordmark used until the logo file arrives in public/brand/. */
+/** Macnet Solutions logo. "ink" is the full-colour logo for light backgrounds; "paper" is the white version for dark ones. */
 export function Wordmark({ tone = "ink" }: { tone?: "ink" | "paper" }) {
-  const color = tone === "ink" ? "text-ink" : "text-paper";
+  const src = tone === "ink" ? "/brand/macnet-logo.png" : "/brand/macnet-logo-white.png";
   return (
-    <Link href="/" className={`group inline-flex items-center gap-2.5 ${color}`} aria-label="Macnet Solutions home">
-      <span aria-hidden className="grid grid-cols-3 gap-[3px]">
-        {Array.from({ length: 6 }).map((_, i) => (
-          <span
-            key={i}
-            className={`block h-[7px] w-[7px] ${i === 4 ? "bg-signal" : tone === "ink" ? "bg-ink" : "bg-paper"}`}
-          />
-        ))}
-      </span>
-      <span className="heading text-[1.15rem] leading-none">
-        Macnet <span className="font-medium">Solutions</span>
-      </span>
+    <Link href="/" className="inline-flex items-center" aria-label="Macnet Solutions home">
+      <Image src={src} alt="Macnet Solutions" width={1600} height={152} priority className="h-[22px] w-auto sm:h-[26px]" />
     </Link>
   );
 }

@@ -3,15 +3,16 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { getBrands, getCategories, getProducts, type ProductFilter } from "@/lib/data";
 import { ProductCard } from "@/components/site/product-card";
-import { PortLabel } from "@/components/ui/port-label";
+import { PageBanner } from "@/components/site/page-banner";
+import { ChevronRight, SearchIcon } from "@/components/ui/icons";
 
 export const metadata: Metadata = {
   title: "Products",
-  description: "Switches, routers, wireless access points, firewalls, fibre and cabling from Cisco, MikroTik, Ubiquiti, TP-Link, Ruijie and D-Link.",
+  description: "Switches, routers, wireless access points, firewalls, fibre and cabling from Ubiquiti, Cisco, Tenda, Rosenberger and TP-Link.",
 };
 
 const STOCK = [
-  { value: "", label: "Any" },
+  { value: "", label: "Any availability" },
   { value: "IN_STOCK", label: "In stock" },
   { value: "ON_ORDER", label: "On order" },
 ];
@@ -37,57 +38,67 @@ async function Catalogue({ searchParams }: { searchParams: PageProps<"/products"
   const hasFilter = Boolean(filter.category || filter.brand || filter.stock || filter.q);
 
   return (
-    <div className="grid gap-10 lg:grid-cols-12">
-      <aside className="lg:col-span-3" aria-label="Filters">
-        <form action="/products" className="flex">
-          {filter.category ? <input type="hidden" name="category" value={filter.category} /> : null}
-          {filter.brand ? <input type="hidden" name="brand" value={filter.brand} /> : null}
-          <label htmlFor="q" className="sr-only">Search products</label>
-          <input id="q" name="q" defaultValue={filter.q} placeholder="Search model or SKU" className="field" />
-          <button className="btn btn-primary h-11 px-4">Go</button>
-        </form>
+    <div className="grid gap-10 lg:grid-cols-12 lg:gap-[30px]">
+      <aside className="space-y-8 lg:col-span-4 xl:col-span-3" aria-label="Filters">
+        <Widget title="Search" list={false}>
+          <form action="/products" className="flex">
+            {filter.category ? <input type="hidden" name="category" value={filter.category} /> : null}
+            {filter.brand ? <input type="hidden" name="brand" value={filter.brand} /> : null}
+            <label htmlFor="q" className="sr-only">Search products</label>
+            <input id="q" name="q" defaultValue={filter.q} placeholder="Model or SKU" className="field" />
+            <button className="grid h-[3.25rem] w-14 shrink-0 place-items-center bg-red text-white transition-colors hover:bg-heading" aria-label="Search">
+              <SearchIcon className="h-5 w-5" />
+            </button>
+          </form>
+        </Widget>
 
-        <FilterGroup title="Category">
+        <Widget title="Categories">
           <FilterLink href={href(filter, { category: undefined })} active={!filter.category}>All categories</FilterLink>
           {categories.map((c) => (
             <FilterLink key={c.id} href={href(filter, { category: c.slug })} active={filter.category === c.slug} count={c._count.products}>
               {c.name}
             </FilterLink>
           ))}
-        </FilterGroup>
-        <FilterGroup title="Brand">
+        </Widget>
+        <Widget title="Brands">
           <FilterLink href={href(filter, { brand: undefined })} active={!filter.brand}>All brands</FilterLink>
           {brands.map((b) => (
             <FilterLink key={b.id} href={href(filter, { brand: b.slug })} active={filter.brand === b.slug} count={b._count.products}>
               {b.name}
             </FilterLink>
           ))}
-        </FilterGroup>
-        <FilterGroup title="Availability">
+        </Widget>
+        <Widget title="Availability">
           {STOCK.map((s) => (
             <FilterLink key={s.value} href={href(filter, { stock: s.value || undefined })} active={(filter.stock ?? "") === s.value}>
               {s.label}
             </FilterLink>
           ))}
-        </FilterGroup>
+        </Widget>
+
+        <div className="dot-pattern bg-red p-8 text-center text-white">
+          <h2 className="text-2xl font-bold text-white">Need a model we don&apos;t list?</h2>
+          <p className="mt-3 text-[0.9375rem] text-white/90">We source beyond this catalogue. Send the part number and we&apos;ll quote it.</p>
+          <Link href="/quote" className="btn btn-white mt-6">Get a quote</Link>
+        </div>
       </aside>
 
-      <div className="lg:col-span-9">
-        <div className="flex flex-wrap items-baseline justify-between gap-3 border-b border-ink pb-4">
-          <p className="heading text-xl text-ink">
+      <div className="lg:col-span-8 xl:col-span-9">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line pb-5">
+          <h2 className="text-xl font-semibold sm:text-2xl">
             {activeCategory?.name ?? "All products"}
-            {activeBrand ? <span className="text-text-muted"> · {activeBrand.name}</span> : null}
-            {filter.q ? <span className="text-text-muted"> · “{filter.q}”</span> : null}
-          </p>
-          <p className="port uppercase text-text-muted">
+            {activeBrand ? <span className="font-normal text-body">, {activeBrand.name}</span> : null}
+            {filter.q ? <span className="font-normal text-body">, “{filter.q}”</span> : null}
+          </h2>
+          <p className="text-sm">
             {products.length} result{products.length === 1 ? "" : "s"}
             {hasFilter ? (
-              <Link href="/products" className="ml-4 text-signal-ink underline underline-offset-4">Clear filters</Link>
+              <Link href="/products" className="link-more ml-4">Clear filters</Link>
             ) : null}
           </p>
         </div>
         {products.length ? (
-          <ul className="mt-8 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+          <ul className="mt-8 grid gap-6 sm:grid-cols-2 lg:gap-[30px] xl:grid-cols-3">
             {products.map((p) => (
               <li key={p.id}>
                 <ProductCard product={p} />
@@ -95,10 +106,10 @@ async function Catalogue({ searchParams }: { searchParams: PageProps<"/products"
             ))}
           </ul>
         ) : (
-          <div className="mt-8 border border-dashed border-rail p-10 text-center">
-            <p className="heading text-xl text-ink">No products match these filters.</p>
-            <p className="mt-2 text-text-muted">We source beyond this list. Ask us for the model you need.</p>
-            <Link href="/quote" className="btn btn-primary mt-6">Request a quote</Link>
+          <div className="card-shadow mt-8 bg-white p-10 text-center">
+            <h3 className="text-xl font-semibold">No products match these filters.</h3>
+            <p className="mt-2">We source beyond this list. Ask us for the model you need.</p>
+            <Link href="/quote" className="btn btn-red mt-6">Request a quote</Link>
           </div>
         )}
       </div>
@@ -106,28 +117,28 @@ async function Catalogue({ searchParams }: { searchParams: PageProps<"/products"
   );
 }
 
-function FilterGroup({ title, children }: { title: string; children: React.ReactNode }) {
+function Widget({ title, list = true, children }: { title: string; list?: boolean; children: React.ReactNode }) {
   return (
-    <div className="mt-8">
-      <p className="port uppercase text-text-muted">{title}</p>
-      <ul className="mt-3 border-t border-rail-line">{children}</ul>
-    </div>
+    <section className="bg-mist p-7">
+      <h2 className="relative pb-3 text-xl font-semibold after:absolute after:bottom-0 after:left-0 after:h-[3px] after:w-10 after:bg-red">{title}</h2>
+      {list ? <ul className="mt-4">{children}</ul> : <div className="mt-5">{children}</div>}
+    </section>
   );
 }
 
 function FilterLink({ href, active, count, children }: { href: string; active: boolean; count?: number; children: React.ReactNode }) {
   return (
-    <li>
+    <li className="border-b border-line last:border-0">
       <Link
         href={href}
         aria-current={active ? "true" : undefined}
-        className={`flex items-center justify-between border-b border-rail-line py-2.5 text-[0.9375rem] transition-colors ${active ? "font-semibold text-ink" : "text-text-muted hover:text-ink"}`}
+        className={`group flex items-center justify-between py-3 text-[0.9375rem] transition-colors duration-300 hover:text-red ${active ? "font-semibold text-red" : "text-heading"}`}
       >
-        <span className="flex items-center gap-2">
-          <span aria-hidden className={`h-1.5 w-1.5 ${active ? "bg-signal" : "bg-transparent"}`} />
+        <span className="flex items-center gap-2.5">
+          <ChevronRight className="h-3 w-3 text-red transition-transform duration-300 group-hover:translate-x-1" />
           {children}
         </span>
-        {count !== undefined ? <span className="port text-rail">{count}</span> : null}
+        {count !== undefined ? <span className="text-sm font-normal text-body">({count})</span> : null}
       </Link>
     </li>
   );
@@ -136,20 +147,21 @@ function FilterLink({ href, active, count, children }: { href: string; active: b
 export default function ProductsPage({ searchParams }: PageProps<"/products">) {
   return (
     <>
-      <section className="border-b border-rail-line">
-        <div className="rack rails py-12 md:py-16">
-          <PortLabel port="P-01">Catalogue</PortLabel>
-          <h1 className="display mt-5 text-5xl text-ink md:text-7xl">Products</h1>
-          <p className="mt-4 max-w-2xl text-lg text-text-muted">
-            Browse by category or brand. No prices are listed. Add items to a quote request and we&apos;ll reply with pricing and lead times.
-          </p>
+      <PageBanner title="Products" crumbs={[{ label: "Products" }]} image="/images/banner-racks.jpg" />
+      <section className="py-16 md:py-24">
+        <div className="container-x">
+          <div className="mx-auto mb-14 max-w-2xl text-center">
+            <p className="eyebrow">Catalogue</p>
+            <h2 className="section-title mt-3">Networking Hardware From Five Brands</h2>
+            <p className="mt-4">
+              Browse by category or brand. No prices are listed. Add items to a quote request and we&apos;ll reply with pricing and lead times.
+            </p>
+          </div>
+          <Suspense fallback={<p className="text-center">Loading catalogue…</p>}>
+            <Catalogue searchParams={searchParams} />
+          </Suspense>
         </div>
       </section>
-      <div className="rack py-12">
-        <Suspense fallback={<p className="port uppercase text-text-muted">Loading catalogue…</p>}>
-          <Catalogue searchParams={searchParams} />
-        </Suspense>
-      </div>
     </>
   );
 }

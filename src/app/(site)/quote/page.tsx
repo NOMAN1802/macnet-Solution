@@ -3,12 +3,20 @@ import { Suspense } from "react";
 import { getProductsBySlugs, getSiteSettings } from "@/lib/data";
 import { telLink, whatsappLink } from "@/lib/site";
 import { LeadForm } from "@/components/site/lead-form";
-import { PortLabel } from "@/components/ui/port-label";
+import { PageBanner } from "@/components/site/page-banner";
+import { Reveal } from "@/components/ui/reveal";
+import { PhoneIcon, WhatsAppIcon } from "@/components/ui/icons";
 
 export const metadata: Metadata = {
   title: "Request a quote",
   description: "Send Macnet Solutions your product list or requirement and get a written quote with pricing and lead times.",
 };
+
+const STEPS = [
+  { title: "We review your list", text: "We check stock and lead times with suppliers for every line." },
+  { title: "An engineer calls if needed", text: "Anything unclear is confirmed by phone before we price it." },
+  { title: "You get a written quote", text: "Usually within one working day, with installation options." },
+];
 
 async function QuoteForm({ searchParams }: { searchParams: PageProps<"/quote">["searchParams"] }) {
   const sp = await searchParams;
@@ -18,41 +26,60 @@ async function QuoteForm({ searchParams }: { searchParams: PageProps<"/quote">["
   return <LeadForm type="QUOTE" products={products} whatsapp={site.whatsapp} source={slugs.length ? "product-page" : "quote-page"} />;
 }
 
+const circle = "grid h-10 w-10 shrink-0 place-items-center rounded-full bg-red text-white";
+
 export default async function QuotePage({ searchParams }: PageProps<"/quote">) {
   const site = await getSiteSettings();
   return (
-    <section className="rack grid gap-12 py-12 md:py-16 lg:grid-cols-12">
-      <div className="lg:col-span-4">
-        <PortLabel port="Q-01">Request a quote</PortLabel>
-        <h1 className="display mt-5 text-5xl text-ink md:text-6xl">Tell us what you need.</h1>
-        <p className="mt-5 text-lg text-text-muted">
-          List models and quantities, or describe the site and the problem. We reply with a written quote, lead times and installation options.
-        </p>
-        <ol className="mt-10 border-t border-ink">
-          {["We review your list and check stock with suppliers.", "An engineer confirms anything unclear by phone.", "You get a written quote, usually within one working day."].map((step, i) => (
-            <li key={step} className="flex gap-4 border-b border-rail-line py-4">
-              <span className="port text-signal-ink">{String(i + 1).padStart(2, "0")}</span>
-              <span className="text-sm">{step}</span>
-            </li>
-          ))}
-        </ol>
-        <div className="mt-8 space-y-1 text-sm">
-          <p className="port uppercase text-text-muted">Prefer to talk?</p>
-          <p>
-            <a href={whatsappLink(site.whatsapp)} target="_blank" rel="noopener noreferrer" className="text-signal-ink underline underline-offset-4">WhatsApp {site.whatsapp}</a>
-          </p>
-          {site.phones.map((p) => (
-            <p key={p}>
-              <a href={telLink(p)} className="port hover:text-ink">{p}</a>
+    <>
+      <PageBanner title="Request a Quote" crumbs={[{ label: "Request a quote" }]} image="/images/banner-office.jpg" />
+      <section className="py-16 md:py-24">
+        <div className="container-x grid gap-14 lg:grid-cols-12 lg:gap-[50px]">
+          <Reveal from="left" className="lg:col-span-7">
+            <Suspense fallback={<div className="card-shadow h-[620px] bg-white" aria-hidden />}>
+              <QuoteForm searchParams={searchParams} />
+            </Suspense>
+          </Reveal>
+
+          <Reveal from="right" className="lg:col-span-5 lg:pt-6">
+            <p className="eyebrow">How it works</p>
+            <h2 className="section-title mt-3">Tell Us What You Need</h2>
+            <p className="mt-4">
+              List models and quantities, or describe the site and the problem. We reply with a written quote, lead times and installation options.
             </p>
-          ))}
+            <ol className="mt-9 space-y-7">
+              {STEPS.map((s, i) => (
+                <li key={s.title} className="flex gap-5">
+                  <span className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-red font-display text-lg font-bold text-white">{i + 1}</span>
+                  <span>
+                    <span className="block font-display text-lg font-semibold text-heading">{s.title}</span>
+                    <span className="mt-1 block text-[0.9375rem]">{s.text}</span>
+                  </span>
+                </li>
+              ))}
+            </ol>
+            <div className="mt-10 border-t border-line pt-8">
+              <h3 className="text-lg font-semibold">Prefer to talk?</h3>
+              <ul className="mt-4 space-y-3">
+                <li>
+                  <a href={whatsappLink(site.whatsapp)} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-heading transition-colors hover:text-red">
+                    <span className={circle}><WhatsAppIcon className="h-5 w-5" /></span>
+                    WhatsApp {site.whatsapp}
+                  </a>
+                </li>
+                {site.phones.map((p) => (
+                  <li key={p}>
+                    <a href={telLink(p)} className="flex items-center gap-3 text-heading transition-colors hover:text-red">
+                      <span className={circle}><PhoneIcon className="h-[18px] w-[18px]" /></span>
+                      {p}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </Reveal>
         </div>
-      </div>
-      <div className="lg:col-span-8">
-        <Suspense fallback={<div className="h-[560px] border border-rail-line bg-white" aria-hidden />}>
-          <QuoteForm searchParams={searchParams} />
-        </Suspense>
-      </div>
-    </section>
+      </section>
+    </>
   );
 }
