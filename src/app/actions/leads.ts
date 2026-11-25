@@ -18,8 +18,8 @@ export async function submitLead(input: LeadInput): Promise<LeadResult> {
   const data = parsed.data;
   // Honeypot filled: pretend success, store nothing.
   if (data.website) return { ok: true };
-  if (data.type === "QUOTE" && !data.message && data.productIds.length === 0) {
-    return { ok: false, error: "Tell us what you need, or pick at least one product.", fieldErrors: { message: ["Add a short description"] } };
+  if (data.type === "QUOTE" && !data.message) {
+    return { ok: false, error: "Tell us what you need.", fieldErrors: { message: ["Add a short description"] } };
   }
 
   const lead = await db.lead.create({
@@ -30,7 +30,6 @@ export async function submitLead(input: LeadInput): Promise<LeadResult> {
       email: data.email.toLowerCase(),
       phone: data.phone || null,
       message: data.message || null,
-      productIds: data.productIds,
       source: data.source ?? null,
     },
   });

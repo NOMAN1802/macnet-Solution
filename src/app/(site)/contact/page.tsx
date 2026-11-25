@@ -17,7 +17,7 @@ export default async function ContactPage() {
   const [site, offices] = await Promise.all([getSiteSettings(), getOffices()]);
   return (
     <>
-      <PageBanner title="Contact Us" crumbs={[{ label: "Contact" }]} image="/images/banner-desk.jpg" />
+      <PageBanner title="Contact Us" crumbs={[{ label: "Contact" }]} image="/images/banner-switch-cables.jpg" />
 
       <section className="py-16 md:py-24">
         <div className="container-x grid gap-14 lg:grid-cols-12 lg:gap-[60px]">

@@ -2,32 +2,33 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { ArrowRight, PlayIcon } from "@/components/ui/icons";
+import { useEffect, useRef, useState } from "react";
+import { motion, useReducedMotion } from "motion/react";
+import { ArrowRight } from "@/components/ui/icons";
+import { PlayButton } from "@/components/site/video-modal";
 
-type Slide = { image: string; title: [string, string]; text: string };
+type Slide = { title: [string, string]; text: string };
 
 const DURATION = 7000;
 
+const VIDEO = { desktop: "/video/hero-network.mp4", mobile: "/video/hero-network-mobile.mp4", poster: "/images/hero-network-poster.jpg" };
+
 /**
- * Full-screen photo hero from the reference: background photos crossfade with a slow zoom,
- * and the headline, copy and buttons slide in from the left each time the slide changes.
+ * Full-screen hero over a looping video of network equipment (switches, patch cables, racks). The headline, copy and buttons slide in
+ * from the left each time the slide changes (reference template). The Pause control stops both
+ * the slides and the video; with reduced motion only the still poster frame is shown.
  */
 export function HeroSlider({ brands }: { brands: string }) {
   const slides: Slide[] = [
     {
-      image: "/images/hero-team.jpg",
       title: ["Networking Hardware", "Supplied & Installed"],
       text: `Switches, routers, Wi-Fi and firewalls from ${brands}, with the design, cabling and installation around them.`,
     },
     {
-      image: "/images/hero-datacenter.jpg",
       title: ["Racks, Fibre & Cabling", "Built to Standard"],
       text: "Cat6/Cat6A and fibre backbones, racks and patching, labelled, tested and handed over with as-built documents.",
     },
     {
-      image: "/images/hero-planning.jpg",
       title: ["One Partner From", "Survey to Support"],
       text: "Site surveys, network design, configuration and annual maintenance contracts from our Dhaka office on Panthapath.",
     },
@@ -36,6 +37,33 @@ export function HeroSlider({ brands }: { brands: string }) {
   const reduce = useReducedMotion();
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
+  const video = useRef<HTMLVideoElement>(null);
+
+  // Start the background video reliably. Browsers only autoplay muted video, and React sets
+  // `muted` as a DOM property rather than relying on the HTML attribute, so set it explicitly,
+  // then (re)try playing once data is ready and whenever the tab becomes visible again.
+  // If the browser still refuses (e.g. iOS Low Power Mode) the poster frame stays visible.
+  useEffect(() => {
+    const v = video.current;
+    if (!v) return;
+    v.muted = true;
+    v.defaultMuted = true;
+    v.playsInline = true;
+    if (paused) {
+      v.pause();
+      return;
+    }
+    const tryPlay = () => {
+      if (v.paused && document.visibilityState === "visible") v.play().catch(() => {});
+    };
+    tryPlay();
+    v.addEventListener("canplay", tryPlay);
+    document.addEventListener("visibilitychange", tryPlay);
+    return () => {
+      v.removeEventListener("canplay", tryPlay);
+      document.removeEventListener("visibilitychange", tryPlay);
+    };
+  }, [paused]);
 
   useEffect(() => {
     if (reduce || paused) return;
@@ -59,20 +87,26 @@ export function HeroSlider({ brands }: { brands: string }) {
       aria-label="Highlights"
       className="relative isolate flex min-h-[640px] items-center overflow-hidden bg-navy pb-36 pt-[120px] sm:min-h-[720px] lg:min-h-[860px] lg:pb-44"
     >
-      {/* Background photos */}
-      <AnimatePresence initial={false}>
-        <motion.div
-          key={slide.image}
-          className="absolute inset-0 -z-20"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: reduce ? 0 : 1.2, ease: "easeInOut" }}
+      {/* Background: looping network-equipment video (poster frame shown while it loads) */}
+      {reduce ? (
+        <Image src={VIDEO.poster} alt="" fill sizes="100vw" preload className="-z-20 object-cover" />
+      ) : (
+        <video
+          ref={video}
+          className="absolute inset-0 -z-20 h-full w-full object-cover"
+          poster={VIDEO.poster}
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+          aria-hidden
         >
-          <Image src={slide.image} alt="" fill sizes="100vw" preload={index === 0} className={`object-cover ${reduce ? "" : "kenburns"}`} />
-        </motion.div>
-      </AnimatePresence>
-      <div aria-hidden className="absolute inset-0 -z-10 bg-[#141821]/70" />
+          <source src={VIDEO.mobile} type="video/mp4" media="(max-width: 767px)" />
+          <source src={VIDEO.desktop} type="video/mp4" />
+        </video>
+      )}
+      <div aria-hidden className="absolute inset-0 -z-10 bg-[#141821]/60" />
 
       <div className="container-x grid items-center gap-10 lg:grid-cols-12">
         <div key={index} className="lg:col-span-7">
@@ -88,20 +122,14 @@ export function HeroSlider({ brands }: { brands: string }) {
             <Link href="/quote" className="btn btn-red">
               Get a quote
             </Link>
-            <Link href="/products" className="btn btn-ghost text-white">
-              Browse products <ArrowRight />
+            <Link href="/#services" className="btn btn-ghost text-white">
+              Our services <ArrowRight />
             </Link>
           </motion.div>
         </div>
 
         <div className="hidden justify-center lg:col-span-5 lg:flex">
-          <Link
-            href="/#projects"
-            className="pulse-ring relative isolate z-0 grid h-[88px] w-[88px] place-items-center rounded-full bg-white text-red transition-transform duration-300 hover:scale-105"
-            aria-label="See recent projects"
-          >
-            <PlayIcon className="ml-1 h-7 w-7" />
-          </Link>
+          <PlayButton label="Play our video" />
         </div>
       </div>
 
@@ -109,7 +137,7 @@ export function HeroSlider({ brands }: { brands: string }) {
       <div className="absolute bottom-[132px] right-4 flex items-center gap-2 sm:right-8 lg:bottom-auto lg:right-10 lg:top-1/2 lg:-translate-y-1/2 lg:flex-col">
         {slides.map((s, i) => (
           <button
-            key={s.image}
+            key={s.title.join(" ")}
             type="button"
             onClick={() => setIndex(i)}
             aria-label={`Show slide ${i + 1}`}
@@ -124,7 +152,7 @@ export function HeroSlider({ brands }: { brands: string }) {
             className="ml-2 text-[0.6875rem] font-semibold uppercase tracking-[0.1em] text-white/80 hover:text-white lg:ml-0 lg:mt-2"
           >
             {paused ? "Play" : "Pause"}
-            <span className="sr-only"> slideshow</span>
+            <span className="sr-only"> slideshow and background video</span>
           </button>
         ) : null}
       </div>

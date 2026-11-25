@@ -7,14 +7,10 @@ async function Dashboard() {
   await connection();
   const session = await auth();
   if (!session?.user) return null;
-  const [leads, counts, productCount] = await Promise.all([
+  const [leads, counts] = await Promise.all([
     db.lead.findMany({ orderBy: { createdAt: "desc" }, take: 50 }),
     db.lead.groupBy({ by: ["status"], _count: true }),
-    db.product.count({ where: { status: "PUBLISHED" } }),
   ]);
-  const ids = [...new Set(leads.flatMap((l) => l.productIds))];
-  const products = ids.length ? await db.product.findMany({ where: { id: { in: ids } }, select: { id: true, sku: true } }) : [];
-  const sku = new Map(products.map((p) => [p.id, p.sku]));
   const count = (s: string) => counts.find((c) => c.status === s)?._count ?? 0;
 
   return (
@@ -24,7 +20,7 @@ async function Dashboard() {
           ["New leads", count("NEW")],
           ["Contacted", count("CONTACTED")],
           ["Quoted", count("QUOTED")],
-          ["Published products", productCount],
+          ["Won", count("WON")],
         ].map(([label, value]) => (
           <div key={String(label)} className="bg-white p-5">
             <dt className="port uppercase text-text-muted">{label}</dt>
@@ -38,13 +34,12 @@ async function Dashboard() {
         <p className="mt-4 text-text-muted">No leads yet. Quote and contact form submissions will appear here.</p>
       ) : (
         <div className="mt-4 overflow-x-auto border border-rail-line bg-white">
-          <table className="w-full min-w-[760px] text-left text-sm">
+          <table className="w-full min-w-[640px] text-left text-sm">
             <thead className="port border-b border-ink uppercase text-text-muted">
               <tr>
                 <th className="p-3 font-normal">Received</th>
                 <th className="p-3 font-normal">Type</th>
                 <th className="p-3 font-normal">From</th>
-                <th className="p-3 font-normal">Products</th>
                 <th className="p-3 font-normal">Message</th>
                 <th className="p-3 font-normal">Status</th>
               </tr>
@@ -60,7 +55,6 @@ async function Dashboard() {
                     <a href={`mailto:${l.email}`} className="text-signal-ink">{l.email}</a>
                     {l.phone ? <p className="port">{l.phone}</p> : null}
                   </td>
-                  <td className="port p-3">{l.productIds.map((id) => sku.get(id) ?? "?").join(", ") || "—"}</td>
                   <td className="max-w-xs p-3 text-text-muted">{l.message}</td>
                   <td className="port p-3">{l.status}</td>
                 </tr>
@@ -79,7 +73,7 @@ export default function AdminHome() {
       <p className="port uppercase text-text-muted">Admin · Overview</p>
       <h1 className="heading mt-2 text-4xl text-ink">Leads</h1>
       <p className="mt-2 max-w-2xl text-text-muted">
-        Quote requests and contact messages from the website. Product editing, CSV import and content editing come in the next phase.
+        Quote requests and contact messages from the website. Content editing comes in the next phase.
       </p>
       <div className="mt-8">
         <Suspense fallback={<p className="port uppercase text-text-muted">Loading…</p>}>

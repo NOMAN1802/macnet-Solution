@@ -5,7 +5,7 @@ import { ChevronRight } from "@/components/ui/icons";
 type Crumb = { label: string; href?: string };
 
 /** Inner-page banner: dark photo strip, centred title and breadcrumb (reference "inner banner"). */
-export function PageBanner({ title, crumbs, image = "/images/banner-office.jpg" }: { title: string; crumbs: Crumb[]; image?: string }) {
+export function PageBanner({ title, crumbs, image = "/images/banner-fibre-switch.jpg" }: { title: string; crumbs: Crumb[]; image?: string }) {
   return (
     <section className="relative isolate overflow-hidden bg-navy pb-16 pt-[140px] text-center md:pb-24 md:pt-[190px]">
       <Image src={image} alt="" fill preload sizes="100vw" className="kenburns -z-20 object-cover" />

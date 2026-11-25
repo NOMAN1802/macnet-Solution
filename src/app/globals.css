@@ -215,13 +215,16 @@ html {
     box-shadow: 0 5px 30px rgb(35 38 49 / 0.09);
   }
 
-  /* Card whose red fill rises from the bottom on hover (reference service-card hover) */
+  /*
+   * Card whose accent fill rises from the bottom on hover (reference service-card hover, timed
+   * from the demo video): the fill grows up and fades in (~0.45s), and on leave it sinks back
+   * down while fading out. `.is-hover` is the same state, set by <TouchHover> on touch screens.
+   */
   .fill-card {
     position: relative;
     isolation: isolate;
     overflow: hidden;
     background: var(--white);
-    transition: transform 400ms ease, box-shadow 400ms ease;
   }
   .fill-card::before {
     content: "";
@@ -229,17 +232,19 @@ html {
     inset: 0;
     z-index: -1;
     background: var(--red);
+    opacity: 0;
     transform: scaleY(0);
     transform-origin: bottom;
-    transition: transform 450ms cubic-bezier(0.6, 0.1, 0.2, 1);
+    transition:
+      transform 550ms cubic-bezier(0.6, 0.1, 0.2, 1),
+      opacity 550ms ease;
   }
-  .fill-card:hover::before,
-  .fill-card:focus-within::before {
+  .fill-card:is(:hover, :focus-within, .is-hover)::before {
+    opacity: 1;
     transform: scaleY(1);
-  }
-  .fill-card:hover,
-  .fill-card:focus-within {
-    transform: translateY(-6px);
+    transition:
+      transform 450ms cubic-bezier(0.6, 0.1, 0.2, 1),
+      opacity 300ms ease;
   }
   .fill-card .fc-title,
   .fill-card .fc-text,
@@ -247,9 +252,19 @@ html {
   .fill-card .link-more {
     transition: color 350ms ease;
   }
-  .fill-card:hover :is(.fc-title, .fc-text, .fc-icon, .link-more),
-  .fill-card:focus-within :is(.fc-title, .fc-text, .fc-icon, .link-more) {
+  .fill-card:is(:hover, :focus-within, .is-hover) :is(.fc-title, .fc-text, .fc-icon, .link-more) {
     color: var(--white);
+  }
+  .fill-card:is(:hover, :focus-within, .is-hover) .link-more svg {
+    transform: translateX(4px);
+  }
+
+  /* Image that zooms slowly on hover (case-study cards). */
+  .hover-zoom img {
+    transition: transform 700ms ease;
+  }
+  .hover-zoom:is(:hover, :focus-within, .is-hover) img {
+    transform: scale(1.1);
   }
 
   .field {
@@ -318,14 +333,65 @@ html {
   animation-delay: 1s;
 }
 
+/* Brand logos (reference "trusted brands" row): muted grey until hovered, then full colour.
+   Touch screens have no hover, so they always show the logos in colour. */
+.brand-logo img {
+  filter: grayscale(1);
+  opacity: 0.55;
+  transition:
+    filter 400ms ease,
+    opacity 400ms ease,
+    transform 400ms ease;
+}
+.brand-logo:hover img {
+  filter: none;
+  opacity: 1;
+  transform: scale(1.06);
+}
+@media (hover: none) {
+  .brand-logo img {
+    filter: none;
+    opacity: 1;
+  }
+}
+
+/* Video lightbox (reference template): backdrop fades in, the player zooms in */
+.video-modal::backdrop {
+  background: rgb(10 12 18 / 0.88);
+}
+.video-modal[open],
+.video-modal[open]::backdrop {
+  animation: vm-fade 300ms ease-out;
+}
+.video-modal-panel {
+  animation: vm-zoom 450ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+@keyframes vm-fade {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes vm-zoom {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .video-modal[open],
+  .video-modal[open]::backdrop,
+  .video-modal-panel {
+    animation: none;
+  }
   .kenburns,
   .pulse-ring::before,
   .pulse-ring::after {
     animation: none;
   }
-  .fill-card,
-  .fill-card::before {
+  .fill-card::before,
+  .fill-card:is(:hover, :focus-within, .is-hover)::before,
+  .hover-zoom img {
     transition: none;
   }
 }

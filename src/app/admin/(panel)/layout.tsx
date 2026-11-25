@@ -30,8 +30,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <Wordmark tone="paper" />
             <nav className="port hidden gap-5 uppercase text-rail md:flex">
               <Link href="/admin" className="hover:text-paper">Leads</Link>
-              <span title="Coming next" className="opacity-50">Products</span>
-              <span title="Coming next" className="opacity-50">CSV import</span>
               <span title="Coming next" className="opacity-50">Content</span>
             </nav>
           </div>

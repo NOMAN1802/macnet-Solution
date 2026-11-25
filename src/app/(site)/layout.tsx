@@ -1,6 +1,7 @@
 import { Header } from "@/components/site/header";
 import { Footer } from "@/components/site/footer";
 import { WhatsAppFloat } from "@/components/site/whatsapp-float";
+import { TouchHover } from "@/components/ui/touch-hover";
 import { getSiteSettings } from "@/lib/data";
 
 export default async function SiteLayout({ children }: LayoutProps<"/">) {
@@ -16,6 +17,7 @@ export default async function SiteLayout({ children }: LayoutProps<"/">) {
       </main>
       <Footer />
       <WhatsAppFloat number={site.whatsapp} />
+      <TouchHover />
     </>
   );
 }

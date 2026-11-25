@@ -13,6 +13,8 @@ const OFFSET = {
 /**
  * Scroll-triggered entrance used across the site, matching the reference template's
  * fadeInUp / fadeInLeft / fadeInRight entrances. Opacity and transform only.
+ * Replays every time the element scrolls back into view (up or down, desktop and mobile):
+ * once it leaves the viewport it quietly resets to its starting state.
  */
 export function Reveal({
   children,
@@ -38,7 +40,7 @@ export function Reveal({
       className={className}
       initial={{ opacity: 0, ...OFFSET[from] }}
       whileInView={{ opacity: 1, x: 0, y: 0 }}
-      viewport={{ once: true, margin: "0px 0px -80px 0px" }}
+      viewport={{ once: false, amount: 0.15, margin: "0px 0px -60px 0px" }}
       transition={{ duration: 0.9, delay, ease: [0.22, 0.61, 0.36, 1] }}
     >
       {children}

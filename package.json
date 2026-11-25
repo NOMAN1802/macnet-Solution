@@ -11,6 +11,7 @@
     "db:up": "docker compose up -d",
     "db:push": "prisma db push",
     "db:seed": "tsx --env-file=.env prisma/seed.ts",
+    "db:testimonials": "tsx --env-file=.env scripts/replace-testimonials.ts",
     "db:studio": "prisma studio",
     "placeholders": "tsx scripts/gen-placeholders.ts",
     "postinstall": "prisma generate"

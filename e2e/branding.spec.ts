@@ -4,7 +4,6 @@ const ADDRESS = "Haque Chamber, 89/2 Panthapath (Suite 3A), Dhaka";
 const EMAIL = "info@macnetsolutions.com.bd";
 const PHONE = "+880 1750148979";
 const BRANDS = ["Ubiquiti", "Cisco", "Tenda", "Rosenberger", "TP-Link"];
-const OLD_BRANDS = ["MikroTik", "Ruijie", "D-Link"];
 const CLIENTS = ["Pacific Jeans", "1000Fix", "Global Brand Pvt Ltd", "Omega Exim", "Star Tech"];
 
 test.describe("Logo", () => {
@@ -71,29 +70,14 @@ test.describe("Brands", () => {
     await page.goto("/");
     const section = page.locator("section[aria-labelledby='brands-title']");
     await section.scrollIntoViewIfNeeded();
-    const names = await section.locator("li a span:first-child").allInnerTexts();
-    expect(names.map((n) => n.trim()).sort()).toEqual([...BRANDS].sort());
+    await expect(section.getByRole("listitem")).toHaveCount(BRANDS.length);
+    for (const b of BRANDS) {
+      const logo = section.getByRole("img", { name: b, exact: true });
+      await logo.scrollIntoViewIfNeeded();
+      await expect(logo).toBeVisible();
+      await expect.poll(() => logo.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0)).toBe(true);
+    }
   });
-
-  test("products page brand filter has the new brands and no old ones", async ({ page }) => {
-    await page.goto("/products");
-    const main = page.getByRole("main");
-    for (const b of BRANDS) await expect(main.getByRole("link", { name: new RegExp(`^${b}`) }).first()).toBeVisible();
-    for (const b of OLD_BRANDS) await expect(main.getByRole("link", { name: new RegExp(`^${b}`) })).toHaveCount(0);
-  });
-
-  for (const b of ["tenda", "rosenberger"]) {
-    test(`filtering by ${b} returns its products`, async ({ page }) => {
-      await page.goto(`/products?brand=${b}`);
-      const cards = page.getByRole("main").locator("a[href^='/products/']");
-      // catalogue streams in behind a Suspense fallback; wait for it rather than counting immediately
-      await expect(cards.first()).toBeVisible();
-      const first = await cards.first().getAttribute("href");
-      const res = await page.goto(first!);
-      expect(res?.status()).toBe(200);
-      await expect(page.getByRole("heading", { level: 1 })).toContainText(new RegExp(b, "i"));
-    });
-  }
 });
 
 test.describe("Clients", () => {
@@ -103,7 +87,12 @@ test.describe("Clients", () => {
     await section.scrollIntoViewIfNeeded();
     await expect(section.getByRole("heading", { name: "Businesses That Run on Our Networks" })).toBeVisible();
     await expect(section.getByRole("listitem")).toHaveCount(CLIENTS.length);
-    for (const c of CLIENTS) await expect(section.getByText(c, { exact: true })).toBeVisible();
+    for (const c of CLIENTS) {
+      const logo = section.getByRole("img", { name: c, exact: true });
+      await logo.scrollIntoViewIfNeeded();
+      await expect(logo).toBeVisible();
+      await expect.poll(() => logo.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0)).toBe(true);
+    }
   });
 });
 
@@ -119,9 +108,25 @@ test("no console errors on key pages", async ({ page }) => {
   const errors: string[] = [];
   page.on("console", (m) => m.type() === "error" && errors.push(m.text()));
   page.on("pageerror", (e) => errors.push(e.message));
-  for (const path of ["/", "/products", "/contact", "/quote"]) {
+  for (const path of ["/", "/contact", "/quote"]) {
     const res = await page.goto(path);
     expect(res?.status(), path).toBe(200);
   }
   expect(errors).toEqual([]);
+});
+
+test.describe("Products removed", () => {
+  test("product pages return 404", async ({ request }) => {
+    for (const path of ["/products", "/products/ubiquiti-unifi-u7-pro"]) {
+      const res = await request.get(path);
+      expect(res.status(), path).toBe(404);
+    }
+  });
+
+  test("no links to /products anywhere on key pages", async ({ page }) => {
+    for (const path of ["/", "/contact", "/quote"]) {
+      await page.goto(path);
+      await expect(page.locator("a[href^='/products']"), path).toHaveCount(0);
+    }
+  });
 });

@@ -14,12 +14,6 @@ enum Role {
   SALES
 }
 
-enum StockStatus {
-  IN_STOCK
-  ON_ORDER
-  DISCONTINUED
-}
-
 enum PublishStatus {
   DRAFT
   PUBLISHED
@@ -38,12 +32,6 @@ enum LeadStatus {
   QUOTED
   WON
   LOST
-}
-
-type SpecRow {
-  group String
-  label String
-  value String
 }
 
 type ImageRef {
@@ -77,84 +65,36 @@ model User {
   leads        Lead[]     @relation("LeadAssignee")
 }
 
-model Category {
-  id           String     @id @default(auto()) @map("_id") @db.ObjectId
-  name         String
-  slug         String     @unique
-  description  String?
-  order        Int        @default(0)
-  specTemplate String[]
-  parentId     String?    @db.ObjectId
-  parent       Category?  @relation("CategoryTree", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  children     Category[] @relation("CategoryTree")
-  products     Product[]
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
-}
-
 model Brand {
-  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
   name        String
-  slug        String    @unique
+  slug        String   @unique
   description String?
   logo        String?
   website     String?
-  order       Int       @default(0)
-  products    Product[]
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-}
-
-model Product {
-  id          String        @id @default(auto()) @map("_id") @db.ObjectId
-  name        String
-  slug        String        @unique
-  sku         String        @unique
-  pitch       String
-  body        Json?
-  specs       SpecRow[]
-  images      ImageRef[]
-  datasheet   String?
-  stock       StockStatus   @default(IN_STOCK)
-  featured    Boolean       @default(false)
-  status      PublishStatus @default(DRAFT)
-  publishAt   DateTime?
-  isMock      Boolean       @default(false)
-  categoryId  String        @db.ObjectId
-  category    Category      @relation(fields: [categoryId], references: [id])
-  brandId     String        @db.ObjectId
-  brand       Brand         @relation(fields: [brandId], references: [id])
-  projectIds  String[]      @db.ObjectId
-  projects    Project[]     @relation(fields: [projectIds], references: [id])
-  seo         Seo?
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-
-  @@index([categoryId])
-  @@index([brandId])
-  @@index([status])
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model Project {
-  id         String        @id @default(auto()) @map("_id") @db.ObjectId
-  title      String
-  slug       String        @unique
-  client     String
-  sector     String
-  location   String
-  year       Int
-  summary    String?
-  challenge  Json?
-  solution   Json?
-  results    ResultStat[]
-  cover      ImageRef?
-  gallery    ImageRef[]
-  productIds String[]      @db.ObjectId
-  products   Product[]     @relation(fields: [productIds], references: [id])
-  status     PublishStatus @default(PUBLISHED)
-  isMock     Boolean       @default(false)
-  createdAt  DateTime      @default(now())
-  updatedAt  DateTime      @updatedAt
+  id        String        @id @default(auto()) @map("_id") @db.ObjectId
+  title     String
+  slug      String        @unique
+  client    String
+  sector    String
+  location  String
+  year      Int
+  summary   String?
+  challenge Json?
+  solution  Json?
+  results   ResultStat[]
+  cover     ImageRef?
+  gallery   ImageRef[]
+  status    PublishStatus @default(PUBLISHED)
+  isMock    Boolean       @default(false)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
 }
 
 model Service {
@@ -254,7 +194,6 @@ model Lead {
   email      String
   phone      String?
   message    String?
-  productIds String[]   @db.ObjectId
   source     String?
   status     LeadStatus @default(NEW)
   notes      String?

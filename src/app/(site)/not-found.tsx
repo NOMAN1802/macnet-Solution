@@ -9,9 +9,9 @@ export default function NotFound() {
         <div className="container-x">
           <p className="font-display text-[6rem] font-bold leading-none text-red sm:text-[8rem]">404</p>
           <h2 className="section-title mt-4">This page isn&apos;t here</h2>
-          <p className="mx-auto mt-4 max-w-md">The link may be old or mistyped. Try the product list, or send us a request and we&apos;ll find what you need.</p>
+          <p className="mx-auto mt-4 max-w-md">The link may be old or mistyped. Head back to the home page, or send us a request and we&apos;ll help.</p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <Link href="/products" className="btn btn-red">Browse products</Link>
+            <Link href="/" className="btn btn-red">Back to home</Link>
             <Link href="/quote" className="btn btn-ghost text-heading">Request a quote</Link>
           </div>
         </div>

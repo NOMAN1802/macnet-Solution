@@ -13,7 +13,6 @@ export const leadSchema = z.object({
     .optional()
     .or(z.literal("")),
   message: z.string().trim().max(5000).optional().or(z.literal("")),
-  productIds: z.array(z.string().regex(/^[a-f0-9]{24}$/)).max(50).default([]),
   source: z.string().max(200).optional(),
   // honeypot: real users never fill this
   website: z.string().max(0).optional().or(z.literal("")),

@@ -3,15 +3,20 @@
 import { animate, useInView, useReducedMotion } from "motion/react";
 import { useEffect, useRef } from "react";
 
-/** Counts up from 0 to `value` once it scrolls into view (reference "number counters"). */
+/** Counts up from 0 to `value` each time it scrolls into view (reference "number counters"). */
 export function Counter({ value, suffix = "" }: { value: number; suffix?: string }) {
   const ref = useRef<HTMLSpanElement>(null);
-  const inView = useInView(ref, { once: true, margin: "0px 0px -60px 0px" });
+  const inView = useInView(ref, { margin: "0px 0px -60px 0px" });
   const reduce = useReducedMotion();
 
   useEffect(() => {
     const el = ref.current;
-    if (!el || !inView || reduce) return;
+    if (!el || reduce) return;
+    if (!inView) {
+      // reset while off-screen so the next time it scrolls in, it counts up again
+      el.textContent = `0${suffix}`;
+      return;
+    }
     const controls = animate(0, value, {
       duration: 2,
       ease: [0.22, 0.61, 0.36, 1],

@@ -1,47 +1,41 @@
 import Image from "next/image";
 import Link from "next/link";
-import {
-  getBrands,
-  getCategories,
-  getFeaturedProducts,
-  getProjects,
-  getServices,
-  getSiteSettings,
-  getTestimonials,
-} from "@/lib/data";
-import { CLIENTS, whatsappLink } from "@/lib/site";
+import { getBrands, getProjects, getServices, getSiteSettings, getTestimonials } from "@/lib/data";
+import { BRAND_LOGOS, CLIENTS, whatsappLink } from "@/lib/site";
 import { HeroSlider } from "@/components/site/hero-slider";
 import { TestimonialSlider } from "@/components/site/testimonial-slider";
 import { LeadForm } from "@/components/site/lead-form";
-import { ProductCard } from "@/components/site/product-card";
+import { PlayButton } from "@/components/site/video-modal";
 import { Reveal } from "@/components/ui/reveal";
 import { Counter } from "@/components/ui/counter";
 import {
   ArrowRight,
-  CategoryIcon,
   CheckIcon,
   HeadsetIcon,
-  PlayIcon,
   QuoteIcon,
+  RackIcon,
   RouterIcon,
   ServiceIcon,
+  SwitchIcon,
   WhatsAppIcon,
 } from "@/components/ui/icons";
 
-const PROJECT_IMAGES = ["/images/project-office.jpg", "/images/project-fibre.jpg", "/images/project-config.jpg"];
-const PROJECT_ICONS = ["switches", "cabling-and-racks", "routers"];
+const PROJECT_IMAGES = ["/images/project-laptop.jpg", "/images/project-fibre.jpg", "/images/project-engineer.jpg"];
+const PROJECT_ICONS = [SwitchIcon, RackIcon, RouterIcon];
+
+function ProjectIcon({ index }: { index: number }) {
+  const Icon = PROJECT_ICONS[index % PROJECT_ICONS.length];
+  return <Icon className="h-10 w-10 shrink-0" />;
+}
 
 export default async function HomePage() {
-  const [site, brands, categories, featured, services, projects, testimonials] = await Promise.all([
+  const [site, brands, services, projects, testimonials] = await Promise.all([
     getSiteSettings(),
     getBrands(),
-    getCategories(),
-    getFeaturedProducts(6),
     getServices(),
     getProjects(3),
     getTestimonials(),
   ]);
-  const productCount = categories.reduce((n, c) => n + c._count.products, 0);
   const brandList = brands
     .map((b) => b.name)
     .join(", ")
@@ -58,7 +52,7 @@ export default async function HomePage() {
             <div className="fill-card card-shadow flex h-full flex-col items-center px-7 py-10 text-center">
               <RouterIcon className="fc-icon h-12 w-12 text-red" />
               <h3 className="fc-title mt-5 text-[1.375rem] font-semibold">Five brands, one order</h3>
-              <p className="fc-text mt-3 text-[0.9375rem]">Mix {brandList} on a single quote, with stock status shown on every listing.</p>
+              <p className="fc-text mt-3 text-[0.9375rem]">Mix {brandList} on a single quote, with lead times confirmed in writing.</p>
             </div>
           </Reveal>
           <Reveal delay={0.15} className="h-full">
@@ -88,8 +82,8 @@ export default async function HomePage() {
           <Reveal from="left" className="relative pb-10 pr-6 sm:pr-10">
             <div className="relative aspect-[5/6] overflow-hidden sm:aspect-[4/4.4]">
               <Image
-                src="/images/about-engineers.jpg"
-                alt="Two engineers checking a network configuration on a laptop"
+                src="/images/about-engineer-rack.jpg"
+                alt="Network engineer checking a rack switch on his laptop"
                 fill
                 sizes="(min-width: 1024px) 540px, 100vw"
                 className="object-cover"
@@ -164,47 +158,18 @@ export default async function HomePage() {
             </Reveal>
           ))}
           <Reveal delay={0.24} className="relative min-h-[260px] overflow-hidden">
-            <Image src="/images/services-briefing.jpg" alt="Engineer briefing a client team on a network plan" fill sizes="(min-width: 1024px) 380px, 100vw" className="object-cover" />
-            <div aria-hidden className="absolute inset-0 grid place-items-center bg-heading/25">
-              <span className="pulse-ring relative isolate grid h-[70px] w-[70px] place-items-center rounded-full bg-white text-red">
-                <PlayIcon className="ml-1 h-6 w-6" />
-              </span>
+            <Image src="/images/services-team-dhaka.jpg" alt="Engineers working on laptops in a Dhaka office" fill sizes="(min-width: 1024px) 380px, 100vw" className="object-cover" />
+            <div className="absolute inset-0 grid place-items-center bg-heading/25">
+              <PlayButton className="h-[70px] w-[70px]" iconClassName="ml-1 h-6 w-6" label="Play our video" />
             </div>
           </Reveal>
-        </div>
-      </section>
-
-      {/* Product range */}
-      <section aria-labelledby="range-title" className="bg-mist py-20 md:py-28">
-        <div className="container-x">
-          <Reveal className="mx-auto max-w-2xl text-center">
-            <p className="eyebrow">Product range</p>
-            <h2 id="range-title" className="section-title mt-3">From the Edge Switch to the Rack It Sits In</h2>
-            <p className="mt-4">Six product lines, stocked or sourced to order. Every listing shows stock status. Prices are quoted per order.</p>
-          </Reveal>
-          <ul className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-[30px]">
-            {categories.map((c, i) => (
-              <Reveal as="li" key={c.id} delay={(i % 3) * 0.12}>
-                <Link href={`/products?category=${c.slug}`} className="fill-card card-shadow flex h-full items-start gap-5 p-7">
-                  <CategoryIcon slug={c.slug} className="fc-icon h-12 w-12 shrink-0 text-red" />
-                  <span>
-                    <span className="fc-title block font-display text-xl font-semibold text-heading">{c.name}</span>
-                    <span className="fc-text mt-2 block text-[0.9375rem]">{c.description}</span>
-                    <span className="link-more mt-4">
-                      {c._count.products} products <ArrowRight className="h-3.5 w-3.5" />
-                    </span>
-                  </span>
-                </Link>
-              </Reveal>
-            ))}
-          </ul>
         </div>
       </section>
 
       {/* Testimonials split */}
       <section aria-labelledby="clients-title" className="grid lg:grid-cols-2">
         <div className="relative min-h-[420px] overflow-hidden lg:min-h-[600px]">
-          <Image src="/images/clients-team.jpg" alt="Client team celebrating a finished office network" fill sizes="(min-width: 1024px) 50vw, 100vw" className="object-cover" />
+          <Image src="/images/clients-office-laptop.jpg" alt="Client smiling at his laptop in a modern office" fill sizes="(min-width: 1024px) 50vw, 100vw" className="object-cover" />
           <Reveal from="left" className="absolute bottom-0 left-0 w-[86%] max-w-[300px] bg-red p-7 text-white sm:p-8">
             <h3 className="text-2xl font-bold text-white">Our Dhaka office</h3>
             <p className="mt-3 text-[0.9375rem] text-white/90">
@@ -215,8 +180,8 @@ export default async function HomePage() {
             </Link>
           </Reveal>
         </div>
-        <div className="dot-pattern flex items-center bg-red px-6 py-16 text-center sm:px-12 lg:px-16 lg:py-20">
-          <Reveal className="mx-auto w-full max-w-xl">
+        <div className="dot-pattern flex min-w-0 items-center bg-red px-6 py-16 text-center sm:px-12 lg:px-16 lg:py-20">
+          <Reveal className="mx-auto w-full min-w-0 max-w-xl">
             <h2 id="clients-title" className="text-[1.875rem] font-bold text-white sm:text-[2.375rem]">What Clients Say About Us</h2>
             <div className="mt-8">
               <TestimonialSlider items={testimonials} />
@@ -236,18 +201,18 @@ export default async function HomePage() {
           <ul className="mt-14 grid gap-6 md:grid-cols-3 lg:gap-[30px]">
             {projects.map((p, i) => (
               <Reveal as="li" key={p.id} delay={i * 0.15}>
-                <article className="card-shadow group flex h-full flex-col bg-white">
+                <article className="card-shadow hover-zoom group flex h-full flex-col bg-white">
                   <div className="relative aspect-[16/10] overflow-hidden">
                     <Image
                       src={PROJECT_IMAGES[i % PROJECT_IMAGES.length]}
                       alt=""
                       fill
                       sizes="(min-width: 768px) 33vw, 100vw"
-                      className="object-cover transition-transform duration-700 group-hover:scale-110 motion-reduce:transition-none"
+                      className="object-cover"
                     />
                   </div>
                   <div className="flex items-center gap-4 bg-red px-6 py-4 text-white">
-                    <CategoryIcon slug={PROJECT_ICONS[i % PROJECT_ICONS.length]} className="h-10 w-10 shrink-0" />
+                    <ProjectIcon index={i} />
                     <div>
                       <h3 className="font-display text-lg font-semibold leading-snug text-white">{p.title}</h3>
                       <p className="text-sm text-white/85">
@@ -296,7 +261,7 @@ export default async function HomePage() {
         <div className="container-x relative z-10 -mt-32 md:-mt-36">
           <Reveal className="card-shadow grid lg:grid-cols-[42%_1fr]">
             <div className="relative isolate overflow-hidden bg-red px-7 py-12 text-white sm:px-10 lg:py-14">
-              <Image src="/images/quote-handshake.jpg" alt="" fill sizes="(min-width: 1024px) 480px, 100vw" className="-z-20 object-cover opacity-25 mix-blend-luminosity" />
+              <Image src="/images/quote-rack-cables.jpg" alt="" fill sizes="(min-width: 1024px) 480px, 100vw" className="-z-20 object-cover opacity-25 mix-blend-luminosity" />
               <div aria-hidden className="absolute inset-0 -z-10 bg-red/80" />
               <h3 className="text-[1.75rem] font-bold leading-tight text-white sm:text-[2.125rem]">One Supplier for the Whole Network</h3>
               <p className="mt-5 text-white/95">
@@ -311,8 +276,8 @@ export default async function HomePage() {
                 ))}
               </ul>
               <div className="mt-9 flex flex-wrap items-center gap-5">
-                <Link href="/products" className="btn btn-white">
-                  Browse products
+                <Link href="/contact" className="btn btn-white">
+                  Contact us
                 </Link>
                 <a
                   href={whatsappLink(site.whatsapp)}
@@ -333,11 +298,10 @@ export default async function HomePage() {
 
       {/* Counters */}
       <section aria-label="Macnet in numbers" className="pt-20 md:pt-24">
-        <dl className="container-x grid grid-cols-2 gap-y-10 text-center md:grid-cols-4">
+        <dl className="container-x grid grid-cols-3 gap-y-10 text-center">
           {[
             { v: brands.length, s: "", l: "Brands supplied" },
-            { v: productCount, s: "+", l: "Products listed" },
-            { v: categories.length, s: "", l: "Product lines" },
+            { v: services.length, s: "", l: "Services offered" },
             { v: CLIENTS.length, s: "", l: "Clients served" },
           ].map((c, i) => (
             <Reveal key={c.l} delay={i * 0.1} className="flex flex-col-reverse">
@@ -358,18 +322,26 @@ export default async function HomePage() {
               Trusted Brands We Supply & Support
             </h2>
           </Reveal>
-          <ul className="mt-12 grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-5">
+          <ul className="mt-12 grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-5 max-sm:[&>li:last-child:nth-child(odd)]:col-span-2">
             {brands.map((b, i) => (
               <Reveal as="li" key={b.id} delay={i * 0.06}>
-                <Link
-                  href={`/products?brand=${b.slug}`}
-                  className="group flex h-20 flex-col items-center justify-center text-[#9a9da6] transition-colors duration-300 hover:text-red"
-                >
-                  <span className="font-display text-2xl font-bold tracking-tight">{b.name}</span>
-                  <span className="text-xs text-body opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100">
-                    {b._count.products} products
+                {BRAND_LOGOS[b.slug] ? (
+                  <span className="brand-logo flex h-24 items-center justify-center px-2">
+                    <Image
+                      src={BRAND_LOGOS[b.slug].src}
+                      alt={b.name}
+                      title={b.name}
+                      width={BRAND_LOGOS[b.slug].width}
+                      height={BRAND_LOGOS[b.slug].height}
+                      sizes="200px"
+                      className={`${BRAND_LOGOS[b.slug].h} w-auto max-w-full object-contain`}
+                    />
                   </span>
-                </Link>
+                ) : (
+                  <span className="flex h-24 items-center justify-center font-display text-2xl font-bold tracking-tight text-[#9a9da6] transition-colors duration-300 hover:text-red">
+                    {b.name}
+                  </span>
+                )}
               </Reveal>
             ))}
           </ul>
@@ -384,37 +356,22 @@ export default async function HomePage() {
             <h2 id="clients-list-title" className="section-title mt-3">Businesses That Run on Our Networks</h2>
           </Reveal>
           <ul className="mt-12 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5 lg:gap-6">
-            {CLIENTS.map((name, i) => (
-              <Reveal as="li" key={name} delay={i * 0.06}>
-                <div className="flex h-24 items-center justify-center border border-line bg-white px-4 text-center font-display text-lg font-semibold text-heading">
-                  {name}
+            {CLIENTS.map((c, i) => (
+              <Reveal as="li" key={c.name} delay={i * 0.06}>
+                <div className="flex h-28 items-center justify-center border border-line bg-white px-6 py-5">
+                  <Image
+                    src={c.logo}
+                    alt={c.name}
+                    title={c.name}
+                    width={c.width}
+                    height={c.height}
+                    sizes="200px"
+                    className="h-12 w-auto max-w-full object-contain"
+                  />
                 </div>
               </Reveal>
             ))}
           </ul>
-        </div>
-      </section>
-
-      {/* Featured */}
-      <section aria-labelledby="featured-title" className="border-t border-line py-20 md:py-28">
-        <div className="container-x">
-          <Reveal className="mx-auto max-w-2xl text-center">
-            <p className="eyebrow">Featured</p>
-            <h2 id="featured-title" className="section-title mt-3">Popular With Our Clients</h2>
-            <p className="mt-4">Hardware we supply most often. Open any listing for full specifications and a quote.</p>
-          </Reveal>
-          <ul className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-[30px]">
-            {featured.map((p, i) => (
-              <Reveal as="li" key={p.id} delay={(i % 3) * 0.12}>
-                <ProductCard product={p} />
-              </Reveal>
-            ))}
-          </ul>
-          <Reveal className="mt-12 text-center">
-            <Link href="/products" className="btn btn-red">
-              All products
-            </Link>
-          </Reveal>
         </div>
       </section>
     </>

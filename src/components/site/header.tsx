@@ -8,7 +8,6 @@ import { Wordmark } from "@/components/ui/wordmark";
 
 const NAV = [
   { href: "/", label: "Home" },
-  { href: "/products", label: "Products" },
   { href: "/#services", label: "Services" },
   { href: "/#projects", label: "Projects" },
   { href: "/contact", label: "Contact" },

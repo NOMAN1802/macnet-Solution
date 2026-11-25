@@ -1,12 +1,11 @@
 import Link from "next/link";
-import { getCategories, getOffices, getSiteSettings } from "@/lib/data";
+import { getOffices, getServices, getSiteSettings } from "@/lib/data";
 import { telLink, whatsappLink } from "@/lib/site";
 import { Wordmark } from "@/components/ui/wordmark";
 import { ChevronRight, MailIcon, PhoneIcon, PinIcon, WhatsAppIcon } from "@/components/ui/icons";
 
 const QUICK = [
   { href: "/", label: "Home" },
-  { href: "/products", label: "Products" },
   { href: "/#services", label: "Services" },
   { href: "/#projects", label: "Projects" },
   { href: "/quote", label: "Request a quote" },
@@ -18,7 +17,7 @@ const circle =
 
 export async function Footer() {
   "use cache";
-  const [site, offices, categories] = await Promise.all([getSiteSettings(), getOffices(), getCategories()]);
+  const [site, offices, services] = await Promise.all([getSiteSettings(), getOffices(), getServices()]);
   const head = offices[0];
   return (
     <footer className="mt-auto bg-navy text-white/75">
@@ -51,13 +50,13 @@ export async function Footer() {
         </div>
 
         <div className="lg:col-span-3">
-          <h2 className="text-lg font-semibold text-white">Products</h2>
+          <h2 className="text-lg font-semibold text-white">Services</h2>
           <ul className="mt-6 space-y-3 text-[0.9375rem]">
-            {categories.map((c) => (
-              <li key={c.id}>
-                <Link href={`/products?category=${c.slug}`} className="group inline-flex items-center gap-3 text-white transition-colors hover:text-red">
+            {services.map((s) => (
+              <li key={s.id}>
+                <Link href="/#services" className="group inline-flex items-center gap-3 text-white transition-colors hover:text-red">
                   <ChevronRight className="h-3 w-3 text-red transition-transform group-hover:translate-x-1" />
-                  {c.name}
+                  {s.title}
                 </Link>
               </li>
             ))}

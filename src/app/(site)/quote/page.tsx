@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import { Suspense } from "react";
-import { getProductsBySlugs, getSiteSettings } from "@/lib/data";
+import { getSiteSettings } from "@/lib/data";
 import { telLink, whatsappLink } from "@/lib/site";
 import { LeadForm } from "@/components/site/lead-form";
 import { PageBanner } from "@/components/site/page-banner";
@@ -9,7 +8,7 @@ import { PhoneIcon, WhatsAppIcon } from "@/components/ui/icons";
 
 export const metadata: Metadata = {
   title: "Request a quote",
-  description: "Send Macnet Solutions your product list or requirement and get a written quote with pricing and lead times.",
+  description: "Send Macnet Solutions your equipment list or requirement and get a written quote with pricing and lead times.",
 };
 
 const STEPS = [
@@ -18,27 +17,17 @@ const STEPS = [
   { title: "You get a written quote", text: "Usually within one working day, with installation options." },
 ];
 
-async function QuoteForm({ searchParams }: { searchParams: PageProps<"/quote">["searchParams"] }) {
-  const sp = await searchParams;
-  const raw = sp.product;
-  const slugs = (Array.isArray(raw) ? raw : raw ? [raw] : []).slice(0, 20).map((s) => s.slice(0, 120));
-  const [products, site] = await Promise.all([getProductsBySlugs(slugs), getSiteSettings()]);
-  return <LeadForm type="QUOTE" products={products} whatsapp={site.whatsapp} source={slugs.length ? "product-page" : "quote-page"} />;
-}
-
 const circle = "grid h-10 w-10 shrink-0 place-items-center rounded-full bg-red text-white";
 
-export default async function QuotePage({ searchParams }: PageProps<"/quote">) {
+export default async function QuotePage() {
   const site = await getSiteSettings();
   return (
     <>
-      <PageBanner title="Request a Quote" crumbs={[{ label: "Request a quote" }]} image="/images/banner-office.jpg" />
+      <PageBanner title="Request a Quote" crumbs={[{ label: "Request a quote" }]} image="/images/banner-fibre-panel.jpg" />
       <section className="py-16 md:py-24">
         <div className="container-x grid gap-14 lg:grid-cols-12 lg:gap-[50px]">
           <Reveal from="left" className="lg:col-span-7">
-            <Suspense fallback={<div className="card-shadow h-[620px] bg-white" aria-hidden />}>
-              <QuoteForm searchParams={searchParams} />
-            </Suspense>
+            <LeadForm type="QUOTE" whatsapp={site.whatsapp} source="quote-page" />
           </Reveal>
 
           <Reveal from="right" className="lg:col-span-5 lg:pt-6">
