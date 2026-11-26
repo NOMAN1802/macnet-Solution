@@ -78,8 +78,8 @@ export default async function HomePage() {
 
       {/* About */}
       <section id="about" className="scroll-mt-24 py-20 md:py-28">
-        <div className="container-x grid items-center gap-14 lg:grid-cols-2 lg:gap-[70px]">
-          <Reveal from="left" className="relative pb-10 pr-6 sm:pr-10">
+        <div className="container-x grid items-start gap-14 lg:grid-cols-2 lg:gap-[70px]">
+          <Reveal from="left" className="relative pb-10 pr-6 sm:pr-10 lg:sticky lg:top-28">
             <div className="relative aspect-[5/6] overflow-hidden sm:aspect-[4/4.4]">
               <Image
                 src="/images/about-engineer-rack.jpg"
@@ -101,7 +101,22 @@ export default async function HomePage() {
 
           <Reveal from="right">
             <p className="eyebrow">About us</p>
-            <h2 className="section-title mt-3">Your Networking Partner From Survey to Support</h2>
+            <div className="member-badge mt-4">
+              <span className="member-badge-icon" aria-hidden>
+                <svg viewBox="0 0 24 24" className="h-7 w-7" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="9" r="6" />
+                  <path d="m9.5 9 1.7 1.7L14.6 7.3" />
+                  <path d="M8.2 13.8 7 22l5-2.6 5 2.6-1.2-8.2" />
+                </svg>
+              </span>
+              <span>
+                <span className="block font-display text-[0.75rem] font-semibold uppercase tracking-[0.12em] text-red">Proud member of</span>
+                <span className="mt-0.5 block font-display text-lg font-bold leading-snug text-heading sm:text-xl">
+                  Bangladesh Computer Samity <span className="text-red">(BCS)</span>
+                </span>
+              </span>
+            </div>
+            <h2 className="section-title mt-6">Your Networking Partner From Survey to Support</h2>
             <p className="mt-5">
               Macnet Solutions supplies networking equipment from {brandList}, then designs, cables, installs and supports the network
               around it from our office in Dhaka.
@@ -355,7 +370,7 @@ export default async function HomePage() {
             <p className="eyebrow">Our clients</p>
             <h2 id="clients-list-title" className="section-title mt-3">Businesses That Run on Our Networks</h2>
           </Reveal>
-          <ul className="mt-12 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5 lg:gap-6">
+          <ul className="mx-auto mt-12 grid max-w-5xl grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-6">
             {CLIENTS.map((c, i) => (
               <Reveal as="li" key={c.name} delay={i * 0.06}>
                 <div className="flex h-28 items-center justify-center border border-line bg-white px-6 py-5">

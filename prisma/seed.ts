@@ -22,7 +22,7 @@ const doc = (...paras: string[]) => ({
 });
 
 const BRANDS = [
-  { name: "Ubiquiti", website: "https://ui.com", description: "UniFi managed Wi-Fi, switching and gateways." },
+  { name: "Cambium", website: "https://www.cambiumnetworks.com", description: "Wireless broadband, enterprise Wi-Fi and switching managed with cnMaestro." },
   { name: "Cisco", website: "https://www.cisco.com", description: "Enterprise switching, routing and security." },
   { name: "Tenda", website: "https://www.tendacn.com", description: "Switches, routers and Wi-Fi for homes, SMBs and outdoor links." },
   { name: "Rosenberger", website: "https://www.rosenberger.com", description: "Fibre and copper connectivity, patch panels and cabinets." },
@@ -32,7 +32,7 @@ const BRANDS = [
 const SERVICES = [
   { title: "Network design", summary: "Site surveys, topology and VLAN design, capacity planning and bills of materials before anything is bought.", points: ["Site survey and Wi-Fi heat-mapping", "Topology, VLAN and IP plans", "Bill of materials across brands", "Redundancy and growth planning"] },
   { title: "Structured cabling", summary: "Cat6/Cat6A and fibre backbones, racks and patching, labelled and tested to standard.", points: ["Cat6 / Cat6A horizontal runs", "Single-mode and multimode fibre", "Rack build and cable management", "Test and certification reports"] },
-  { title: "Installation and configuration", summary: "Racking, firmware, configuration and hand-over of switches, routers, Wi-Fi and firewalls.", points: ["Switch, router and firewall configuration", "Controller setup (UniFi, Omada, Tenda)", "Firewall policy and VPN", "As-built documentation"] },
+  { title: "Installation and configuration", summary: "Racking, firmware, configuration and hand-over of switches, routers, Wi-Fi and firewalls.", points: ["Switch, router and firewall configuration", "Controller setup (cnMaestro, Omada, Tenda)", "Firewall policy and VPN", "As-built documentation"] },
   { title: "AMC support", summary: "Annual maintenance contracts with response times, spares and scheduled health checks.", points: ["Defined response times", "On-site and remote support", "Spare-unit swaps", "Quarterly health checks"] },
 ];
 
@@ -42,7 +42,7 @@ const PROJECTS = [
   { title: "Garment factory floor network", client: "RMG manufacturer (sample)", sector: "Manufacturing", location: "Gazipur", year: 2025, summary: "Cabling and PoE switching for production-line terminals and CCTV.", results: [{ value: "3", label: "production floors" }, { value: "420", label: "cable drops" }, { value: "96", label: "PoE cameras" }] },
   { title: "Hospital core and data room upgrade", client: "Private hospital (sample)", sector: "Healthcare", location: "Dhaka", year: 2024, summary: "Redundant core switching and a rebuilt 42U data room.", results: [{ value: "2", label: "redundant cores" }, { value: "42U", label: "racks rebuilt" }, { value: "0", label: "unplanned downtime" }] },
   { title: "ISP aggregation upgrade", client: "Regional ISP (sample)", sector: "ISP", location: "Mymensingh", year: 2023, summary: "Cisco edge routing and 10G aggregation for subscriber growth.", results: [{ value: "10G", label: "aggregation" }, { value: "12k", label: "subscribers" }, { value: "BGP", label: "dual upstream" }] },
-  { title: "Corporate office fit-out", client: "Software company (sample)", sector: "Corporate", location: "Dhaka", year: 2025, summary: "Cabling, UniFi Wi-Fi and gateway for a new three-floor office.", results: [{ value: "3", label: "floors" }, { value: "24", label: "access points" }, { value: "2 wks", label: "install time" }] },
+  { title: "Corporate office fit-out", client: "Software company (sample)", sector: "Corporate", location: "Dhaka", year: 2025, summary: "Cabling, Cambium Wi-Fi and gateway for a new three-floor office.", results: [{ value: "3", label: "floors" }, { value: "24", label: "access points" }, { value: "2 wks", label: "install time" }] },
 ];
 
 async function main() {

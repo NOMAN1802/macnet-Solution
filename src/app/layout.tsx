@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     template: "%s | Macnet Solutions",
   },
   description:
-    "Switches, routers, wireless, firewalls, fibre and structured cabling from Ubiquiti, Cisco, Tenda, Rosenberger and TP-Link, supplied and installed by Macnet Solutions in Dhaka.",
+    "Switches, routers, wireless, firewalls, fibre and structured cabling from Cambium, Cisco, Tenda, Rosenberger and TP-Link, supplied and installed by Macnet Solutions in Dhaka.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

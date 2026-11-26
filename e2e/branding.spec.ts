@@ -3,8 +3,8 @@ import { expect, test } from "@playwright/test";
 const ADDRESS = "Haque Chamber, 89/2 Panthapath (Suite 3A), Dhaka";
 const EMAIL = "info@macnetsolutions.com.bd";
 const PHONE = "+880 1750148979";
-const BRANDS = ["Ubiquiti", "Cisco", "Tenda", "Rosenberger", "TP-Link"];
-const CLIENTS = ["Pacific Jeans", "1000Fix", "Global Brand Pvt Ltd", "Omega Exim", "Star Tech"];
+const BRANDS = ["Cambium", "Cisco", "Tenda", "Rosenberger", "TP-Link"];
+const CLIENTS = ["Pacific Jeans", "1000Fix", "TechBee", "Icon Technology Solutions"];
 
 test.describe("Logo", () => {
   test("header and footer show the logo image and it loads", async ({ page }) => {
@@ -81,7 +81,7 @@ test.describe("Brands", () => {
 });
 
 test.describe("Clients", () => {
-  test("home page lists all five clients", async ({ page }) => {
+  test("home page lists all clients", async ({ page }) => {
     await page.goto("/");
     const section = page.locator("section[aria-labelledby='clients-list-title']");
     await section.scrollIntoViewIfNeeded();
@@ -93,6 +93,28 @@ test.describe("Clients", () => {
       await expect(logo).toBeVisible();
       await expect.poll(() => logo.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0)).toBe(true);
     }
+  });
+});
+
+test.describe("About", () => {
+  test("shows the Bangladesh Computer Samity membership highlight", async ({ page }) => {
+    await page.goto("/");
+    const badge = page.locator("#about .member-badge");
+    await badge.scrollIntoViewIfNeeded();
+    await expect(badge).toBeVisible();
+    await expect(badge).toContainText("Proud member of");
+    await expect(badge).toContainText("Bangladesh Computer Samity (BCS)");
+  });
+});
+
+test.describe("Favicon", () => {
+  test("serves the Macnet icon, not the Next.js default", async ({ page, request }) => {
+    await page.goto("/");
+    const href = await page.locator("link[rel='icon'][type='image/png']").first().getAttribute("href");
+    expect(href).toContain("/icon.png");
+    const res = await request.get(href!);
+    expect(res.status()).toBe(200);
+    expect(res.headers()["content-type"]).toContain("image/png");
   });
 });
 
@@ -117,7 +139,7 @@ test("no console errors on key pages", async ({ page }) => {
 
 test.describe("Products removed", () => {
   test("product pages return 404", async ({ request }) => {
-    for (const path of ["/products", "/products/ubiquiti-unifi-u7-pro"]) {
+    for (const path of ["/products", "/products/some-old-product"]) {
       const res = await request.get(path);
       expect(res.status(), path).toBe(404);
     }

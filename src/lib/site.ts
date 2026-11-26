@@ -29,10 +29,10 @@ export function youtubeId(input: string): string | null {
 /**
  * Logos for the brands Macnet supplies, keyed by Brand.slug. Files in public/brands/ are
  * transparent PNGs trimmed to the logo, 200px tall. `h` is the on-screen height (Tailwind
- * class), tuned per logo so wide wordmarks and the stacked Ubiquiti mark look balanced.
+ * class), tuned per logo so stacked marks and wide wordmarks look balanced.
  */
 export const BRAND_LOGOS: Record<string, { src: string; width: number; height: number; h: string }> = {
-  ubiquiti: { src: "/brands/ubiquiti.png", width: 166, height: 200, h: "h-16" },
+  cambium: { src: "/brands/cambium.png", width: 760, height: 200, h: "h-11" },
   cisco: { src: "/brands/cisco.png", width: 340, height: 200, h: "h-12" },
   tenda: { src: "/brands/tenda.png", width: 870, height: 200, h: "h-8" },
   rosenberger: { src: "/brands/rosenberger.png", width: 1254, height: 200, h: "h-9" },
@@ -43,9 +43,8 @@ export const BRAND_LOGOS: Record<string, { src: string; width: number; height: n
 export const CLIENTS = [
   { name: "Pacific Jeans", logo: "/clients/pacific-jeans.png", width: 434, height: 151 },
   { name: "1000Fix", logo: "/clients/1000fix.png", width: 800, height: 363 },
-  { name: "Global Brand Pvt Ltd", logo: "/clients/global-brand.svg", width: 600, height: 200 },
-  { name: "Omega Exim", logo: "/clients/omega-exim.png", width: 142, height: 70 },
-  { name: "Star Tech", logo: "/clients/star-tech.png", width: 144, height: 64 },
+  { name: "TechBee", logo: "/clients/techbee.png", width: 972, height: 200 },
+  { name: "Icon Technology Solutions", logo: "/clients/icon-technology.png", width: 332, height: 200 },
 ] as const;
 
 export function whatsappLink(number: string, text?: string) {
