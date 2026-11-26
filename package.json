@@ -14,7 +14,10 @@
     "db:testimonials": "tsx --env-file=.env scripts/replace-testimonials.ts",
     "db:studio": "prisma studio",
     "placeholders": "tsx scripts/gen-placeholders.ts",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "package:cpanel": "node scripts/package-cpanel.mjs",
+    "db:push:prod": "node --env-file=.env.production node_modules/prisma/build/index.js db push",
+    "db:seed:prod": "tsx --env-file=.env.production prisma/seed.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^7.0.7",

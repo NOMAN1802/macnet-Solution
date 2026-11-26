@@ -1,6 +1,8 @@
 // Macnet Solutions data model (MongoDB). Prisma 6 is used because Prisma 7 has no MongoDB support.
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  // native = this Mac; the others cover the Linux servers cPanel hosts commonly run.
+  binaryTargets = ["native", "rhel-openssl-1.0.x", "rhel-openssl-1.1.x", "rhel-openssl-3.0.x", "debian-openssl-3.0.x"]
 }
 
 datasource db {

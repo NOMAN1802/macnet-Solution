@@ -48,3 +48,5 @@ next-env.d.ts
 
 # design references and original logo files (not used by the site; processed copies live in public/)
 /assets/
+deploy/cpanel/
+deploy/*.zip
